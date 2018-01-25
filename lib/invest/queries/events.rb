@@ -66,6 +66,28 @@ class Invest
       ).first.first
     end
 
+    # Public: Calculates a year withdraws and deposits for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    #
+    # Returns a double.
+    def asset_year_input(asset, year)
+      @asset_year_input ||= {}
+
+      if cached = @asset_year_input[[asset, year]]
+        return cached
+      end
+
+      start_date = Date.new(year, 1, 1)
+      end_date = Date.new(year, 12, 31)
+
+      @asset_year_input[[asset, year]] = db.execute(
+        "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND date(date) >= ? AND date(date) <= ?;",
+        [asset, start_date.to_s, end_date.to_s]
+      ).first.first
+    end
+
     # Public: Calculates a month balance for an asset.
     #
     # asset - the asset name

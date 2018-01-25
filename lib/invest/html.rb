@@ -10,13 +10,6 @@ class Invest
 
     attr_reader :events
 
-    # define delegators to events
-    %i(year_range categories asset_month_input asset_month_balance asset_month_profit asset_month_profitability).each do |m|
-      define_method(m) do |*args|
-        events.send(m, *args)
-      end
-    end
-
     # Public: Initializes the Html class.
     #
     # events - the events instance.
@@ -91,6 +84,24 @@ class Invest
         else
           formatted_value
         end
+      end
+    end
+
+    # Public: Delegates missing methods to events if possible.
+    def method_missing(method, *args, &block)
+      if events.respond_to?(method)
+        events.send(method, *args, &block)
+      else
+        super
+      end
+    end
+
+    # Public: Checks if events can respond to missing.
+    def respond_to_missing?(method, include_private = false)
+      if events.respond_to?(method, include_private)
+        true
+      else
+        super
       end
     end
   end
