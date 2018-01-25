@@ -26,15 +26,13 @@ class Invest
   #
   # Returns nothing.
   def html_report!(file)
-    Html.new(self).save!(file)
+    Html.new(EventsQuery.new(self)).save!(file)
   end
 
-  private
-
-  # Private: Gets the in memory sqlite database with the data imported from
+  # Public: Gets the in memory sqlite database with the data imported from
   # data/data.csv.
   #
-  # Returns the SQLite3::Database.
+  # Returns a SQLite3::Database.
   def db
     @db ||= begin
       db = SQLite3::Database.new(":memory:")
@@ -53,6 +51,8 @@ class Invest
       db
     end
   end
+
+  private
 
   # Private: Imports data from the data/events.csv to the sqlite db.
   #
@@ -85,4 +85,5 @@ class Invest
   end
 end
 
+require_relative "invest/queries/events"
 require_relative "invest/html"

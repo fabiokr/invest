@@ -6,15 +6,19 @@ I18n.enforce_available_locales = false
 
 class Invest
   class Html
+    extend Forwardable
+
     TEMPLATES_PATH = "lib/invest/templates/html/"
 
-    attr_reader :invest
+    attr_reader :events
+
+    def_delegator :@events, :year_range
 
     # Public: Initializes the Html class.
     #
-    # invest - the invest instance.
-    def initialize(invest)
-      @invest = invest
+    # events - the events instance.
+    def initialize(events)
+      @events = events
     end
 
     # Public: Saves the html report.
