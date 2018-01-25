@@ -1,0 +1,28 @@
+#! /usr/bin/env ruby
+
+require_relative "../lib/invest"
+
+def get_arg(i, name)
+  ARGV[i] || begin
+    puts "Missing argument '#{name}'"
+    exit 1
+  end
+end
+
+if ARGV.empty? || ARGV[0] == "-h"
+  puts """
+    Usage:
+
+    invest html file.html
+  """
+else
+  case ARGV[0]
+  when "html"
+    Invest.new
+  when "html-no-bitcoin"
+    Invest.new
+  else
+    puts "Invalid output '#{ARGV[0]}'"
+    exit 1
+  end
+end
