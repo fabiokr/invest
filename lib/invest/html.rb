@@ -11,7 +11,7 @@ class Invest
     attr_reader :events
 
     # define delegators to events
-    %i(year_range categories asset_month_input).each do |m|
+    %i(year_range categories asset_month_input asset_month_balance).each do |m|
       define_method(m) do |*args|
         events.send(m, *args)
       end
