@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Investimentos</title>
+
+    <style>
+      <%= css %>
+    </style>
+  </head>
+  <body>
+    <div class="tabs">
+      <div class="tab">
+        <input type="radio" name="css-tabs" id="tab-dashboard" checked class="tab-switch">
+        <label for="tab-dashboard" class="tab-label">Carteira</label>
+
+        <div class="tab-content">
+          Carteira
+        </div>
+      </div>
+
+      <% (2015..2018).to_a.reverse.each do |year| %>
+        <div class="tab">
+          <input type="radio" name="css-tabs" id="tab-<%= year %>" class="tab-switch">
+          <label for="tab-<%= year %>" class="tab-label"><%= year %></label>
+
+          <div class="tab-content">
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </body>
+</html>
