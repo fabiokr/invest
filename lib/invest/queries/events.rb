@@ -1,4 +1,5 @@
 require "date"
+require "bigdecimal"
 
 class Invest
   class EventsQuery
@@ -50,10 +51,16 @@ class Invest
     #
     # Returns a double.
     def asset_month_input(asset, year, month)
+      @asset_month_input ||= {}
+
+      if cached = @asset_month_input[[asset, year, month]]
+        return cached
+      end
+
       start_date = Date.civil(year, month, 1)
       end_date = Date.civil(year, month, -1)
 
-      db.execute(
+      @asset_month_input[[asset, year, month]] = db.execute(
         "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND date(date) >= ? AND date(date) <= ?;",
         [asset, start_date.to_s, end_date.to_s]
       ).first.first
@@ -69,6 +76,12 @@ class Invest
     def asset_month_balance(asset, year, month)
       date = Date.civil(year, month, -1)
 
+      @asset_month_balance ||= {}
+
+      if cached = @asset_month_balance[[asset, year, month]]
+        return cached
+      end
+
       return unless date <= self.class.current_month_last_day
 
       sum = db.execute(
@@ -78,7 +91,9 @@ class Invest
 
       price = asset_month_price(asset, year, month)
 
-      sum * price if price
+      @asset_month_balance[[asset, year, month]] = if price
+        sum * price
+      end
     end
 
     # Public: Calculates the month latest price for an asset.
@@ -89,6 +104,12 @@ class Invest
     #
     # Returns a double.
     def asset_month_price(asset, year, month)
+      @asset_month_price ||= {}
+
+      if cached = @asset_month_price[[asset, year, month]]
+        return cached
+      end
+
       date = Date.civil(year, month, -1)
 
       price = db.execute(
@@ -96,7 +117,27 @@ class Invest
         [asset, date.to_s]
       ).first
 
-      price.first if price
+      if price
+        @asset_month_price[[asset, year, month]] = price.first
+      end
+    end
+
+    # Public: Calculates the month profit for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_profit(asset, year, month)
+      previous_month = Date.new(year, month, -1) << 1
+      month_balance = asset_month_balance(asset, year, month)
+
+      if month_balance
+        month_balance -
+          (asset_month_input(asset, year, month) || 0) -
+          (asset_month_balance(asset, previous_month.year, previous_month.month) || 0)
+      end
     end
 
     private

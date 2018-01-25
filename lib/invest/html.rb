@@ -11,7 +11,7 @@ class Invest
     attr_reader :events
 
     # define delegators to events
-    %i(year_range categories asset_month_input asset_month_balance).each do |m|
+    %i(year_range categories asset_month_input asset_month_balance asset_month_profit).each do |m|
       define_method(m) do |*args|
         events.send(m, *args)
       end
@@ -72,6 +72,23 @@ class Invest
         if span
           number_span(formatted_value, value)
         elsif value
+          formatted_value
+        end
+      end
+    end
+
+    # Public: Formats a numeric value as a percent.
+    #
+    # value - the numeric value
+    #
+    # Returns a String.
+    def percent(value, span: true)
+      if value
+        formatted_value = "%.2f\%" % (value * 100)
+
+        if span
+          number_span(formatted_value, value)
+        else
           formatted_value
         end
       end

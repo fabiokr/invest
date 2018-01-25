@@ -42,7 +42,7 @@ class Invest
           date text,
           asset text,
           category text,
-          quantity integer,
+          quantity decimal(20, 10),
           price decimal(20, 10),
           brokerage decimal(20, 10)
         );
