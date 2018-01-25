@@ -80,7 +80,7 @@
                     <tr class="profitability">
                       <td>Rentabilidade</td>
                       <% (1..12).each do |month| %>
-                        <td></td>
+                        <td><%= percent asset_month_profitability(asset, year, month) %></td>
                       <% end %>
                       <td></td>
                       <td></td>

@@ -130,13 +130,39 @@ class Invest
     #
     # Returns a double.
     def asset_month_profit(asset, year, month)
+      @asset_month_profit ||= {}
+
+      if cached = @asset_month_profit[[asset, year, month]]
+        return cached
+      end
+
       previous_month = Date.new(year, month, -1) << 1
       month_balance = asset_month_balance(asset, year, month)
 
-      if month_balance
+      @asset_month_profit[[asset, year, month]] = if month_balance
         month_balance -
           (asset_month_input(asset, year, month) || 0) -
           (asset_month_balance(asset, previous_month.year, previous_month.month) || 0)
+      end
+    end
+
+    # Public: Calculates the month profitability for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_profitability(asset, year, month)
+      month_balance = asset_month_balance(asset, year, month)
+      month_input = asset_month_input(asset, year, month) || 0
+
+      previous_month = Date.new(year, month, -1) << 1
+      previous_month_balance = asset_month_balance(asset, previous_month.year, previous_month.month) || 0
+
+      if month_balance
+        v = (month_balance == 0 ? -month_input : previous_month_balance + month_input)
+        asset_month_profit(asset, year, month) / BigDecimal.new(v, 10) if v != 0
       end
     end
 
