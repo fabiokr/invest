@@ -25,7 +25,79 @@
           <label for="tab-<%= year %>" class="tab-label"><%= year %></label>
 
           <div class="tab-content">
+            <table class="history">
+              <thead>
+                <tr>
+                  <th>Ativo</th>
+                  <th></th>
+                  <th>Jan</th>
+                  <th>Fev</th>
+                  <th>Mar</th>
+                  <th>Abr</th>
+                  <th>Mai</th>
+                  <th>Jun</th>
+                  <th>Jul</th>
+                  <th>Ago</th>
+                  <th>Set</th>
+                  <th>Out</th>
+                  <th>Nov</th>
+                  <th>Dez</th>
+                  <th><%= year %></th>
+                  <th>Acumulado/Média</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% categories.each do |category, assets| %>
+                  <% assets.each do |asset| %>
+                    <tr class="applications">
+                      <td rowspan="5" class="asset"><%= asset %></td>
+                      <td>Aporte</td>
+                      <% (1..12).each do |month| %>
+                        <td></td>
+                      <% end %>
+                      <td></td>
+                      <td></td>
+                    </tr>
 
+                    <tr class="balance">
+                      <td>Valor Final</td>
+                      <% (1..12).each do |month| %>
+                        <td></td>
+                      <% end %>
+                      <td></td>
+                      <td></td>
+                    </tr>
+
+                    <tr class="profit">
+                      <td>Renda</td>
+                      <% (1..12).each do |month| %>
+                        <td></td>
+                      <% end %>
+                      <td></td>
+                      <td></td>
+                    </tr>
+
+                    <tr class="profitability">
+                      <td>Rentabilidade</td>
+                      <% (1..12).each do |month| %>
+                        <td></td>
+                      <% end %>
+                      <td></td>
+                      <td></td>
+                    </tr>
+
+                    <tr class="weight">
+                      <td>Peso</td>
+                      <% (1..12).each do |month| %>
+                        <td></td>
+                      <% end %>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              </tbody>
+            </table>
           </div>
         </div>
       <% end %>

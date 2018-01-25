@@ -6,13 +6,14 @@ I18n.enforce_available_locales = false
 
 class Invest
   class Html
-    extend Forwardable
-
     TEMPLATES_PATH = "lib/invest/templates/html/"
 
     attr_reader :events
 
-    def_delegator :@events, :year_range
+    # define delegators to events
+    %i(year_range categories).each do |m|
+      define_method(m) { events.send(m) }
+    end
 
     # Public: Initializes the Html class.
     #

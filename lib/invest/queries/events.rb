@@ -6,13 +6,31 @@ class Invest
       @invest = invest
     end
 
-    # Public: Gets the year range from the events.
+    # Public: Gets the years list from the events.
     #
     # Returns an array.
     def year_range
-      db.execute(
+      @year_range ||= db.execute(
         "SELECT DISTINCT strftime('%Y', date) AS year FROM events ORDER BY year;"
       ).map(&:first)
+    end
+
+    # Public: Gets the available categories and their assets from the data.
+    #
+    # Returns a Hash.
+    def categories
+      @categories ||= begin
+        hash = {}
+
+        db.execute(
+          "SELECT DISTINCT asset, category FROM events ORDER BY category, asset;"
+        ).map do |(asset, category)|
+          hash[category] ||= []
+          hash[category] << asset
+        end
+
+        hash
+      end
     end
 
     private
