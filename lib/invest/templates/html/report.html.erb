@@ -53,7 +53,7 @@
                       <td rowspan="5" class="asset"><%= asset %></td>
                       <td>Aporte</td>
                       <% (1..12).each do |month| %>
-                        <td></td>
+                        <td><%= money asset_month_input(asset, year, month) %></td>
                       <% end %>
                       <td></td>
                       <td></td>

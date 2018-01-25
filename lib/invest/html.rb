@@ -11,8 +11,10 @@ class Invest
     attr_reader :events
 
     # define delegators to events
-    %i(year_range categories).each do |m|
-      define_method(m) { events.send(m) }
+    %i(year_range categories asset_month_input).each do |m|
+      define_method(m) do |*args|
+        events.send(m, *args)
+      end
     end
 
     # Public: Initializes the Html class.
@@ -40,6 +42,39 @@ class Invest
         File.read(File.join(TEMPLATES_PATH, "report.scss")),
         syntax: :scss
       ).render
+    end
+
+    # Public: Adds a span to a number to include classes based on negative/positive.
+    #
+    # formatted - the formatted value
+    # value - the original numeric value
+    #
+    # Returns a string.
+    def number_span(formatted, value)
+      if value > 0
+        %(<span class="positive">#{formatted}</span>)
+      elsif value < 0
+        %(<span class="negative">#{formatted}</span>)
+      else
+        %(<span class="neutral">#{formatted}</span>)
+      end
+    end
+
+    # Public: Formats a numeric value as a money.
+    #
+    # value - the numeric value
+    #
+    # Returns a String.
+    def money(value, span: true)
+      if value
+        formatted_value = Money.new(value * 100).format(symbol: "")
+
+        if span
+          number_span(formatted_value, value)
+        elsif value
+          formatted_value
+        end
+      end
     end
   end
 end

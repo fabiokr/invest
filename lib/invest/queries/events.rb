@@ -33,6 +33,20 @@ class Invest
       end
     end
 
+    # Public: Calculates a month withdraws and deposits for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_input(asset, year, month)
+      db.execute(
+        "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND CAST(strftime('%Y', date) AS integer) = ? AND CAST(strftime('%m', date) AS integer) = ?;",
+        [asset, year, month]
+      ).first.first
+    end
+
     private
 
     # Private: Gets the database instance.
