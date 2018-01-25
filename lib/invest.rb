@@ -11,8 +11,22 @@ class Invest
     force_quotes: true
   }
 
-  def initialize
+  # Public: Initializes the Invest class.
+  #
+  # options - initialization options
+  def initialize(options = {})
+    @options = options
+
     import_data_from_events!
+  end
+
+  # Public: Generates an html report.
+  #
+  # file - the file to output the report to.
+  #
+  # Returns nothing.
+  def html_report!(file)
+    Html.new(self).save!(file)
   end
 
   private
@@ -70,3 +84,5 @@ class Invest
     end
   end
 end
+
+require_relative "invest/html"
