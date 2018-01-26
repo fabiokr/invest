@@ -47,7 +47,7 @@
                 </tr>
               </thead>
               <tbody>
-                <% categories.each do |category, assets| %>
+                <% categories(year).each do |category, assets| %>
                   <% assets.each do |asset| %>
                     <tr class="applications">
                       <td rowspan="5" class="asset"><%= asset %></td>

@@ -55,15 +55,20 @@ class Invest
 
     # Public: Gets the available categories and their assets from the data.
     #
+    # year - a year to filter
+    #
     # Returns a Hash.
-    def categories
+    def categories(year = nil)
       hash = {}
 
       db.execute(
         "SELECT DISTINCT asset, category FROM events ORDER BY category, asset;"
       ).map do |(asset, category)|
-        hash[category] ||= []
-        hash[category] << asset
+        # reject assets withouth balance on the year
+        if year.nil? || asset_year_balance(asset, year)
+          hash[category] ||= []
+          hash[category] << asset
+        end
       end
 
       hash
@@ -204,8 +209,10 @@ class Invest
     #
     # Returns a double.
     def asset_year_profit(asset, year)
-      (1..12).inject(0) do |sum, month|
-        sum + (asset_month_profit(asset, year, month) || 0)
+      if asset_year_balance(asset, year)
+        (1..12).inject(0) do |sum, month|
+          sum + (asset_month_profit(asset, year, month) || 0)
+        end
       end
     end
 
@@ -236,8 +243,10 @@ class Invest
     #
     # Returns a double.
     def asset_year_profitability(asset, year)
-      deposits = (asset_year_balance(asset, year - 1) || 0) + (positive_asset_year_input(asset, year) || 0)
-      asset_year_profit(asset, year) / BigDecimal(deposits, 10)
+      if profit = asset_year_profit(asset, year)
+        deposits = (asset_year_balance(asset, year - 1) || 0) + (positive_asset_year_input(asset, year) || 0)
+        profit / BigDecimal(deposits, 10)
+      end
     end
 
     memoize :year_range, :categories,
