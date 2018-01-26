@@ -486,7 +486,13 @@ class Invest
       :asset_month_input, :asset_year_input, :positive_asset_year_input,
       :asset_month_balance, :asset_year_balance,
       :asset_month_price,
-      :asset_month_profit, :asset_year_profit
+      :asset_month_profit, :asset_year_profit,
+      :category_month_input, :category_year_input, :positive_category_year_input,
+      :category_month_balance, :category_year_balance,
+      :category_month_profit, :category_year_profit,
+      :total_month_input, :total_year_input, :positive_total_year_input,
+      :total_month_balance, :total_year_balance,
+      :total_month_profit, :total_year_profit
 
     private
 
