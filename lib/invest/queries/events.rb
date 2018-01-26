@@ -102,6 +102,22 @@ class Invest
       ).first.first
     end
 
+    # Public: Calculates a year deposits for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    #
+    # Returns a double.
+    def positive_asset_year_input(asset, year)
+      start_date = Date.new(year, 1, 1)
+      end_date = Date.new(year, 12, 31)
+
+      db.execute(
+        "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND quantity > 0 AND date(date) >= ? AND date(date) <= ?;",
+        [asset, start_date.to_s, end_date.to_s]
+      ).first.first
+    end
+
     # Public: Calculates a month balance for an asset.
     #
     # asset - the asset name
@@ -213,8 +229,21 @@ class Invest
       end
     end
 
-    memoize :year_range, :categories, :asset_month_input, :asset_year_input,
-      :asset_month_balance, :asset_year_balance, :asset_month_price,
+    # Public: Calculates the year profitability for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    #
+    # Returns a double.
+    def asset_year_profitability(asset, year)
+      deposits = (asset_year_balance(asset, year - 1) || 0) + (positive_asset_year_input(asset, year) || 0)
+      asset_year_profit(asset, year) / BigDecimal(deposits, 10)
+    end
+
+    memoize :year_range, :categories,
+      :asset_month_input, :asset_year_input, :positive_asset_year_input,
+      :asset_month_balance, :asset_year_balance,
+      :asset_month_price,
       :asset_month_profit, :asset_year_profit
 
     private
