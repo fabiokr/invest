@@ -17,6 +17,27 @@ class Invest
       @current_year_last_day ||= Date.new(Date.today.year, 12, 31)
     end
 
+    # Public: Memoizes a methods return value based on its arguments.
+    #
+    # methods - the methods to memoize
+    def self.memoize(*methods)
+      methods.each do |method|
+        define_method(:"#{method}_memoized") do |*args|
+          @memoize ||= {}
+          @memoize[method] ||= {}
+
+          if @memoize[method].key?(args)
+            return @memoize[method][args]
+          else
+            @memoize[method][args] = send(:"#{method}_original", *args)
+          end
+        end
+
+        alias_method :"#{method}_original", method
+        alias_method method, :"#{method}_memoized"
+      end
+    end
+
     attr_reader :invest
 
     def initialize(invest)
@@ -27,7 +48,7 @@ class Invest
     #
     # Returns an array.
     def year_range
-      @year_range ||= db.execute(
+      db.execute(
         "SELECT DISTINCT cast(strftime('%Y', date) AS integer) AS year FROM events ORDER BY year;"
       ).map(&:first)
     end
@@ -36,18 +57,16 @@ class Invest
     #
     # Returns a Hash.
     def categories
-      @categories ||= begin
-        hash = {}
+      hash = {}
 
-        db.execute(
-          "SELECT DISTINCT asset, category FROM events ORDER BY category, asset;"
-        ).map do |(asset, category)|
-          hash[category] ||= []
-          hash[category] << asset
-        end
-
-        hash
+      db.execute(
+        "SELECT DISTINCT asset, category FROM events ORDER BY category, asset;"
+      ).map do |(asset, category)|
+        hash[category] ||= []
+        hash[category] << asset
       end
+
+      hash
     end
 
     # Public: Calculates a month withdraws and deposits for an asset.
@@ -58,16 +77,10 @@ class Invest
     #
     # Returns a double.
     def asset_month_input(asset, year, month)
-      @asset_month_input ||= {}
-
-      if cached = @asset_month_input[[asset, year, month]]
-        return cached
-      end
-
       start_date = Date.civil(year, month, 1)
       end_date = Date.civil(year, month, -1)
 
-      @asset_month_input[[asset, year, month]] = db.execute(
+      db.execute(
         "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND date(date) >= ? AND date(date) <= ?;",
         [asset, start_date.to_s, end_date.to_s]
       ).first.first
@@ -80,16 +93,10 @@ class Invest
     #
     # Returns a double.
     def asset_year_input(asset, year)
-      @asset_year_input ||= {}
-
-      if cached = @asset_year_input[[asset, year]]
-        return cached
-      end
-
       start_date = Date.new(year, 1, 1)
       end_date = Date.new(year, 12, 31)
 
-      @asset_year_input[[asset, year]] = db.execute(
+      db.execute(
         "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND date(date) >= ? AND date(date) <= ?;",
         [asset, start_date.to_s, end_date.to_s]
       ).first.first
@@ -105,12 +112,6 @@ class Invest
     def asset_month_balance(asset, year, month)
       date = Date.civil(year, month, -1)
 
-      @asset_month_balance ||= {}
-
-      if cached = @asset_month_balance[[asset, year, month]]
-        return cached
-      end
-
       return unless date <= self.class.current_month_last_day
 
       sum = db.execute(
@@ -120,9 +121,7 @@ class Invest
 
       price = asset_month_price(asset, year, month)
 
-      @asset_month_balance[[asset, year, month]] = if price
-        sum * price
-      end
+      sum * price if price
     end
 
     # Public: Calculates a year balance for an asset.
@@ -134,12 +133,6 @@ class Invest
     def asset_year_balance(asset, year)
       date = Date.new(year, 12, 31)
 
-      @asset_year_balance ||= {}
-
-      if cached = @asset_year_balance[[asset, year]]
-        return cached
-      end
-
       return unless date <= self.class.current_year_last_day
 
       sum = db.execute(
@@ -149,9 +142,7 @@ class Invest
 
       price = asset_month_price(asset, year, 12)
 
-      @asset_year_balance[[asset, year]] = if price
-        sum * price
-      end
+      sum * price if price
     end
 
     # Public: Calculates the month latest price for an asset.
@@ -162,12 +153,6 @@ class Invest
     #
     # Returns a double.
     def asset_month_price(asset, year, month)
-      @asset_month_price ||= {}
-
-      if cached = @asset_month_price[[asset, year, month]]
-        return cached
-      end
-
       date = Date.civil(year, month, -1)
 
       price = db.execute(
@@ -175,9 +160,7 @@ class Invest
         [asset, date.to_s]
       ).first
 
-      if price
-        @asset_month_price[[asset, year, month]] = price.first
-      end
+      price.first if price
     end
 
     # Public: Calculates the month profit for an asset.
@@ -188,16 +171,10 @@ class Invest
     #
     # Returns a double.
     def asset_month_profit(asset, year, month)
-      @asset_month_profit ||= {}
-
-      if cached = @asset_month_profit[[asset, year, month]]
-        return cached
-      end
-
       previous_month = Date.new(year, month, -1) << 1
       month_balance = asset_month_balance(asset, year, month)
 
-      @asset_month_profit[[asset, year, month]] = if month_balance
+      if month_balance
         month_balance -
           (asset_month_input(asset, year, month) || 0) -
           (asset_month_balance(asset, previous_month.year, previous_month.month) || 0)
@@ -223,6 +200,10 @@ class Invest
         asset_month_profit(asset, year, month) / BigDecimal.new(v, 10) if v != 0
       end
     end
+
+    memoize :year_range, :categories, :asset_month_input, :asset_year_input,
+      :asset_month_balance, :asset_year_balance, :asset_month_price,
+      :asset_month_profit
 
     private
 
