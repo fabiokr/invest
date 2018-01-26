@@ -63,3 +63,83 @@ body {
     z-index: 3;
   }
 }
+
+table.history {
+  border-collapse: collapse;
+  width: 100%;
+
+  th {
+    text-align: center;
+    background-color: #BBA2FF;
+  }
+  td {
+    text-align: right;
+  }
+  th, td {
+    width: 6.5%;
+  }
+  tr.profit {
+    background-color: #a6ebfc;
+    font-weight: bold;
+  }
+  tr.profitability {
+    background-color: #a6ebfc;
+    font-weight: bold;
+  }
+  tr.weight {
+    background-color: #a6ebfc;
+    font-weight: bold;
+  }
+  tr.spacer {
+    background-color: black;
+  }
+  tr:hover {
+    background: yellow;
+  }
+  td.asset {
+    background-color: #1abc9c;
+    font-weight: bold;
+    text-align: center;
+  }
+  td.group {
+    background-color: #15962a;
+    font-weight: bold;
+    text-align: center;
+  }
+  td.total {
+    background-color: #94a3a0;
+    font-weight: bold;
+    text-align: center;
+  }
+  th, td {
+    padding: 0.25rem;
+    border: 1px solid #ccc;
+  }
+
+  /* Fixed table scroll */
+  thead tr{
+    display:block;
+  }
+
+  th, td{
+    width: 125px;
+  }
+
+  tbody{
+    display: block;
+    height: 800px;
+    overflow: auto;
+  }
+}
+
+.positive {
+  color: green;
+}
+
+.negative {
+  color: red;
+}
+
+.neutral {
+  color: grey;
+}
