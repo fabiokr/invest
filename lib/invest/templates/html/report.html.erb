@@ -95,6 +95,57 @@
                       <td></td>
                     </tr>
                   <% end %>
+
+                  <!-- Categories -->
+                  <tr class="applications">
+                    <td rowspan="5" class="category"><%= category %></td>
+                    <td>Aporte</td>
+                    <% (1..12).each do |month| %>
+                      <td><%= money category_month_input(category, year, month) %></td>
+                    <% end %>
+                    <td><%= money category_year_input(category, year) %></td>
+                    <td></td>
+                  </tr>
+
+                  <tr class="balance">
+                    <td>Valor Final</td>
+                    <% (1..12).each do |month| %>
+                      <td><%= money category_month_balance(category, year, month) %></td>
+                    <% end %>
+                    <td><%= money category_year_balance(category, year) %></td>
+                    <td></td>
+                  </tr>
+
+                  <tr class="profit">
+                    <td>Renda</td>
+                    <% (1..12).each do |month| %>
+                      <td><%= money category_month_profit(category, year, month) %></td>
+                    <% end %>
+                    <td><%= money category_year_profit(category, year) %></td>
+                    <td></td>
+                  </tr>
+
+                  <tr class="profitability">
+                    <td>Rentabilidade</td>
+                    <% (1..12).each do |month| %>
+                      <td><%= percent category_month_profitability(category, year, month) %></td>
+                    <% end %>
+                    <td><%= percent category_year_profitability(category, year) %></td>
+                    <td></td>
+                  </tr>
+
+                  <tr class="weight">
+                    <td>Peso</td>
+                    <% (1..12).each do |month| %>
+                      <td></td>
+                    <% end %>
+                    <td></td>
+                    <td></td>
+                  </tr>
+
+                  <tr class="spacer">
+                    <td colspan="16"></td>
+                  </tr>
                 <% end %>
               </tbody>
             </table>
