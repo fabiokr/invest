@@ -181,6 +181,18 @@ class Invest
       end
     end
 
+    # Public: Calculates the year profit for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    #
+    # Returns a double.
+    def asset_year_profit(asset, year)
+      (1..12).inject(0) do |sum, month|
+        sum + (asset_month_profit(asset, year, month) || 0)
+      end
+    end
+
     # Public: Calculates the month profitability for an asset.
     #
     # asset - the asset name
@@ -203,7 +215,7 @@ class Invest
 
     memoize :year_range, :categories, :asset_month_input, :asset_year_input,
       :asset_month_balance, :asset_year_balance, :asset_month_price,
-      :asset_month_profit
+      :asset_month_profit, :asset_year_profit
 
     private
 
