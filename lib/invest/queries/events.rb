@@ -104,6 +104,18 @@ class Invest
       end
     end
 
+    # Public: Calculates a month withdraws and deposits total.
+    #
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def total_month_input(year, month)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_month_input(category, year, month) || 0)
+      end
+    end
+
     # Public: Calculates a year withdraws and deposits for an asset.
     #
     # asset - the asset name
@@ -132,6 +144,17 @@ class Invest
       end
     end
 
+    # Public: Calculates a year withdraws and deposits totals.
+    #
+    # year - the year to check
+    #
+    # Returns a double.
+    def total_year_input(year)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_year_input(category, year) || 0)
+      end
+    end
+
     # Public: Calculates a year deposits for an asset.
     #
     # asset - the asset name
@@ -157,6 +180,17 @@ class Invest
     def positive_category_year_input(category, year)
       categories[category].inject(0) do |sum, asset|
         sum + (positive_asset_year_input(asset, year) || 0)
+      end
+    end
+
+    # Public: Calculates a year withdraws and deposits total.
+    #
+    # year - the year to check
+    #
+    # Returns a double.
+    def positive_total_year_input(year)
+      categories.keys.inject(0) do |sum, category|
+        sum + (positive_category_year_input(category, year) || 0)
       end
     end
 
@@ -195,6 +229,18 @@ class Invest
       end
     end
 
+    # Public: Calculates a month balance total.
+    #
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def total_month_balance(year, month)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_month_balance(category, year, month) || 0)
+      end
+    end
+
     # Public: Calculates a year balance for an asset.
     #
     # asset - the asset name
@@ -225,6 +271,17 @@ class Invest
     def category_year_balance(category, year)
       categories[category].inject(0) do |sum, asset|
         sum + (asset_year_balance(asset, year) || 0)
+      end
+    end
+
+    # Public: Calculates a year balance total.
+    #
+    # year - the year to check
+    #
+    # Returns a double.
+    def total_year_balance(year)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_year_balance(category, year) || 0)
       end
     end
 
@@ -277,6 +334,18 @@ class Invest
       end
     end
 
+    # Public: Calculates the month profit total.
+    #
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def total_month_profit(year, month)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_month_profit(category, year, month) || 0)
+      end
+    end
+
     # Public: Calculates the year profit for an asset.
     #
     # asset - the asset name
@@ -301,6 +370,18 @@ class Invest
     def category_year_profit(category, year)
       categories[category].inject(0) do |sum, asset|
         sum + (asset_year_profit(asset, year) || 0)
+      end
+    end
+
+    # Public: Calculates the year profit total.
+    #
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def total_year_profit(year)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_year_profit(category, year) || 0)
       end
     end
 
@@ -344,6 +425,25 @@ class Invest
       end
     end
 
+    # Public: Calculates the month profitability total.
+    #
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def total_month_profitability(year, month)
+      month_balance = total_month_balance(year, month)
+      month_input = total_month_input(year, month) || 0
+
+      previous_month = Date.new(year, month, -1) << 1
+      previous_month_balance = total_month_balance(previous_month.year, previous_month.month) || 0
+
+      if month_balance
+        v = (month_balance == 0 ? -month_input : previous_month_balance + month_input)
+        total_month_profit(year, month) / BigDecimal.new(v, 10) if v != 0
+      end
+    end
+
     # Public: Calculates the year profitability for an asset.
     #
     # asset - the asset name
@@ -366,6 +466,18 @@ class Invest
     def category_year_profitability(category, year)
       if profit = category_year_profit(category, year)
         deposits = (category_year_balance(category, year - 1) || 0) + (positive_category_year_input(category, year) || 0)
+        profit / BigDecimal(deposits, 10)
+      end
+    end
+
+    # Public: Calculates the year profitability total.
+    #
+    # year - the year to check
+    #
+    # Returns a double.
+    def total_year_profitability(year)
+      if profit = total_year_profit(year)
+        deposits = (total_year_balance(year - 1) || 0) + (positive_total_year_input(year) || 0)
         profit / BigDecimal(deposits, 10)
       end
     end

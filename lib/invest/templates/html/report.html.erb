@@ -147,6 +147,53 @@
                     <td colspan="16"></td>
                   </tr>
                 <% end %>
+
+                <!-- Totals -->
+                <tr class="applications">
+                  <td rowspan="5" class="total">Total</td>
+                  <td>Aporte</td>
+                  <% (1..12).each do |month| %>
+                    <td><%= money total_month_input(year, month) %></td>
+                  <% end %>
+                  <td><%= money total_year_input(year) %></td>
+                  <td></td>
+                </tr>
+
+                <tr class="balance">
+                  <td>Valor Final</td>
+                  <% (1..12).each do |month| %>
+                    <td><%= money total_month_balance(year, month) %></td>
+                  <% end %>
+                  <td><%= money total_year_balance(year) %></td>
+                  <td></td>
+                </tr>
+
+                <tr class="profit">
+                  <td>Renda</td>
+                  <% (1..12).each do |month| %>
+                    <td><%= money total_month_profit(year, month) %></td>
+                  <% end %>
+                  <td><%= money total_year_profit(year) %></td>
+                  <td></td>
+                </tr>
+
+                <tr class="profitability">
+                  <td>Rentabilidade</td>
+                  <% (1..12).each do |month| %>
+                    <td><%= percent total_month_profitability(year, month) %></td>
+                  <% end %>
+                  <td><%= percent total_year_profitability(year) %></td>
+                  <td></td>
+                </tr>
+
+                <tr class="weight">
+                  <td>Peso</td>
+                  <% (1..12).each do |month| %>
+                    <td></td>
+                  <% end %>
+                  <td></td>
+                  <td></td>
+                </tr>
               </tbody>
             </table>
           </div>
