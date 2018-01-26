@@ -64,7 +64,7 @@
                       <% (1..12).each do |month| %>
                         <td><%= money asset_month_balance(asset, year, month) %></td>
                       <% end %>
-                      <td></td>
+                      <td><%= money asset_year_balance(asset, year) %></td>
                       <td></td>
                     </tr>
 

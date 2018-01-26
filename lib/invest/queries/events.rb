@@ -10,6 +10,13 @@ class Invest
       @current_month_last_day ||= Date.civil(Date.today.year, Date.today.month, -1)
     end
 
+    # Public: Gets the current year last day date.
+    #
+    # Returns a date.
+    def self.current_year_last_day
+      @current_year_last_day ||= Date.new(Date.today.year, 12, 31)
+    end
+
     attr_reader :invest
 
     def initialize(invest)
@@ -114,6 +121,35 @@ class Invest
       price = asset_month_price(asset, year, month)
 
       @asset_month_balance[[asset, year, month]] = if price
+        sum * price
+      end
+    end
+
+    # Public: Calculates a year balance for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    #
+    # Returns a double.
+    def asset_year_balance(asset, year)
+      date = Date.new(year, 12, 31)
+
+      @asset_year_balance ||= {}
+
+      if cached = @asset_year_balance[[asset, year]]
+        return cached
+      end
+
+      return unless date <= self.class.current_year_last_day
+
+      sum = db.execute(
+        "SELECT SUM(quantity) FROM events WHERE asset = ? AND date(date) <= date(?);",
+        [asset, date.to_s]
+      ).first.first
+
+      price = asset_month_price(asset, year, 12)
+
+      @asset_year_balance[[asset, year]] = if price
         sum * price
       end
     end
