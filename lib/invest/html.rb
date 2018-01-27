@@ -60,7 +60,7 @@ class Invest
     # Returns a String.
     def money(value, span: true)
       if value
-        formatted_value = Money.new(value * 100).format(symbol: "")
+        formatted_value = Money.new(value).format(symbol: "")
 
         if span
           number_span(formatted_value, value)

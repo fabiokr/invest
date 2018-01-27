@@ -95,7 +95,7 @@ class Invest
       end_date = Date.civil(year, month, -1)
 
       db.execute(
-        "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND date(date) >= ? AND date(date) <= ?;",
+        "SELECT SUM((quantity/100.0) * price) FROM events WHERE asset = ? AND date(date) >= ? AND date(date) <= ?;",
         [asset, start_date.to_s, end_date.to_s]
       ).first.first
     end
@@ -136,7 +136,7 @@ class Invest
       end_date = Date.new(year, 12, 31)
 
       db.execute(
-        "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND date(date) >= ? AND date(date) <= ?;",
+        "SELECT SUM((quantity/100.0) * price) FROM events WHERE asset = ? AND date(date) >= ? AND date(date) <= ?;",
         [asset, start_date.to_s, end_date.to_s]
       ).first.first
     end
@@ -175,7 +175,7 @@ class Invest
       end_date = Date.new(year, 12, 31)
 
       db.execute(
-        "SELECT SUM(quantity * price) FROM events WHERE asset = ? AND quantity > 0 AND date(date) >= ? AND date(date) <= ?;",
+        "SELECT SUM((quantity/100.0) * price) FROM events WHERE asset = ? AND quantity > 0 AND date(date) >= ? AND date(date) <= ?;",
         [asset, start_date.to_s, end_date.to_s]
       ).first.first
     end
@@ -216,7 +216,7 @@ class Invest
       return unless date <= self.class.current_month_last_day
 
       sum = db.execute(
-        "SELECT SUM(quantity) FROM events WHERE asset = ? AND date(date) <= date(?);",
+        "SELECT SUM(quantity/100.0) FROM events WHERE asset = ? AND date(date) <= date(?);",
         [asset, date.to_s]
       ).first.first
 
@@ -262,7 +262,7 @@ class Invest
       return unless date <= self.class.current_year_last_day
 
       sum = db.execute(
-        "SELECT SUM(quantity) FROM events WHERE asset = ? AND date(date) <= date(?);",
+        "SELECT SUM(quantity/100.0) FROM events WHERE asset = ? AND date(date) <= date(?);",
         [asset, date.to_s]
       ).first.first
 

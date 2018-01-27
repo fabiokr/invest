@@ -35,16 +35,17 @@ class Invest
   # Returns a SQLite3::Database.
   def db
     @db ||= begin
-      db = SQLite3::Database.new(":memory:")
+      File.delete("tmp/invest.db") if File.exist?("tmp/invest.db")
+      db = SQLite3::Database.new("tmp/invest.db")
 
       db.execute <<-SQL
         create table events (
           date text,
           asset text,
           category text,
-          quantity decimal(20, 10),
-          price decimal(20, 10),
-          brokerage decimal(20, 10)
+          quantity integer,
+          price integer,
+          brokerage integer
         );
       SQL
 
@@ -65,6 +66,9 @@ class Invest
 
       # formats values before sending to the db
       date = Date.strptime(date, '%d/%m/%y').to_s
+      quantity = quantity.gsub(",", ".").to_f * 100
+      price = price.gsub(",", ".").to_f * 100
+      brokerage = brokerage.gsub(",", ".").to_f * 100
 
       db.execute "insert into events (date, asset, category, quantity, price, brokerage) values (?, ?, ?, ?, ?, ?)",
         [date, asset, category, quantity, price, brokerage]
