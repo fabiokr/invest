@@ -89,7 +89,7 @@
                     <tr class="weight">
                       <td>Peso</td>
                       <% (1..12).each do |month| %>
-                        <td></td>
+                        <td><%= percent asset_month_weight(asset, year, month), span: false %></td>
                       <% end %>
                       <td></td>
                       <td></td>
@@ -137,7 +137,7 @@
                   <tr class="weight">
                     <td>Peso</td>
                     <% (1..12).each do |month| %>
-                      <td></td>
+                      <td><%= percent category_month_weight(category, year, month), span: false %></td>
                     <% end %>
                     <td></td>
                     <td></td>

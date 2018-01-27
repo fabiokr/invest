@@ -74,6 +74,15 @@ class Invest
       hash
     end
 
+    # Public: Gets the asset category.
+    #
+    # asset - the asset name
+    #
+    # Returns a String.
+    def asset_category(asset)
+      categories.find { |category, assets| assets.include?(asset) }.first
+    end
+
     # Public: Calculates a month withdraws and deposits for an asset.
     #
     # asset - the asset name
@@ -482,7 +491,38 @@ class Invest
       end
     end
 
-    memoize :year_range, :categories,
+    # Public: Calculates the asset month weight inside the category.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_weight(asset, year, month)
+      balance = asset_month_balance(asset, year, month)
+
+      if balance && balance > 0
+        category = asset_category(asset)
+        balance / BigDecimal.new(category_month_balance(category, year, month), 10)
+      end
+    end
+
+    # Public: Calculates the category month weight.
+    #
+    # category - the category name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def category_month_weight(category, year, month)
+      balance = category_month_balance(category, year, month)
+
+      if balance && balance > 0
+        balance / BigDecimal.new(total_month_balance(year, month), 10)
+      end
+    end
+
+    memoize :year_range, :categories, :asset_category,
       :asset_month_input, :asset_year_input, :positive_asset_year_input,
       :asset_month_balance, :asset_year_balance,
       :asset_month_price,
