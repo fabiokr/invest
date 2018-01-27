@@ -362,13 +362,15 @@ class Invest
     def category_month_profitability(category, year, month)
       month_balance = category_month_balance(category, year, month)
       month_input = category_month_input(category, year, month) || 0
+      month_output = category_month_output(category, year, month) || 0
 
       previous_month = Date.new(year, month, -1) << 1
       previous_month_balance = category_month_balance(category, previous_month.year, previous_month.month) || 0
 
       if month_balance
-        v = (month_balance == 0 ? -month_input : previous_month_balance + month_input)
-        category_month_profit(category, year, month) / BigDecimal.new(v, 10) if v != 0
+        v = (month_balance == 0 ? month_output : previous_month_balance + month_input)
+        profit = month_balance - month_input - previous_month_balance
+        profit / BigDecimal.new(v, 10) if v != 0
       end
     end
 
@@ -423,19 +425,6 @@ class Invest
       end
     end
 
-    # Public: Calculates the year profit for a category.
-    #
-    # category - the category name
-    # year - the year to check
-    # month - the month to check
-    #
-    # Returns a double.
-    def category_year_profit(category, year)
-      categories[category].inject(0) do |sum, asset|
-        sum + (asset_year_profit(asset, year) || 0)
-      end
-    end
-
     # Public: Calculates the year profitability for a category.
     #
     # category - the category name
@@ -443,13 +432,20 @@ class Invest
     #
     # Returns a double.
     def category_year_profitability(category, year)
-      if profit = category_year_profit(category, year)
-        deposits = (category_year_balance(category, year - 1) || 0) + (positive_category_year_input(category, year) || 0)
-        profit / BigDecimal(deposits, 10)
+      year_balance = category_year_balance(category, year)
+      year_input = category_year_input(category, year) || 0
+      year_output = category_year_output(category, year) || 0
+
+      previous_year_balance = category_year_balance(category, year - 1) || 0
+
+      if year_balance
+        v = (year_balance == 0 ? year_output : previous_year_balance + year_input)
+        profit = year_balance - year_input - previous_year_balance
+        profit / BigDecimal.new(v, 10) if v != 0
       end
     end
 
-    # Public: Calculates a month withdraws and deposits total.
+    # Public: Calculates a month deposits total.
     #
     # year - the year to check
     # month - the month to check
@@ -458,6 +454,18 @@ class Invest
     def total_month_input(year, month)
       categories.keys.inject(0) do |sum, category|
         sum + (category_month_input(category, year, month) || 0)
+      end
+    end
+
+    # Public: Calculates a month withdraws total.
+    #
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def total_month_output(year, month)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_month_output(category, year, month) || 0)
       end
     end
 
@@ -473,18 +481,6 @@ class Invest
       end
     end
 
-    # Public: Calculates the month profit total.
-    #
-    # year - the year to check
-    # month - the month to check
-    #
-    # Returns a double.
-    def total_month_profit(year, month)
-      categories.keys.inject(0) do |sum, category|
-        sum + (category_month_profit(category, year, month) || 0)
-      end
-    end
-
     # Public: Calculates the month profitability total.
     #
     # year - the year to check
@@ -492,19 +488,21 @@ class Invest
     #
     # Returns a double.
     def total_month_profitability(year, month)
-      month_balance = total_month_balance(year, month)
-      month_input = total_month_input(year, month) || 0
+      balance = total_month_balance(year, month)
+      input = total_month_input(year, month) || 0
+      output = total_month_output(year, month) || 0
 
       previous_month = Date.new(year, month, -1) << 1
-      previous_month_balance = total_month_balance(previous_month.year, previous_month.month) || 0
+      previous_balance = total_month_balance(previous_month.year, previous_month.month) || 0
 
-      if month_balance
-        v = (month_balance == 0 ? -month_input : previous_month_balance + month_input)
-        total_month_profit(year, month) / BigDecimal.new(v, 10) if v != 0
+      if balance
+        v = (balance == 0 ? output : previous_balance + input)
+        profit = balance - input - previous_balance
+        profit / BigDecimal.new(v, 10) if v != 0
       end
     end
 
-    # Public: Calculates a year withdraws and deposits totals.
+    # Public: Calculates a year deposits totals.
     #
     # year - the year to check
     #
@@ -512,6 +510,17 @@ class Invest
     def total_year_input(year)
       categories.keys.inject(0) do |sum, category|
         sum + (category_year_input(category, year) || 0)
+      end
+    end
+
+    # Public: Calculates a year withdraws totals.
+    #
+    # year - the year to check
+    #
+    # Returns a double.
+    def total_year_output(year)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_year_output(category, year) || 0)
       end
     end
 
@@ -526,27 +535,22 @@ class Invest
       end
     end
 
-    # Public: Calculates the year profit total.
-    #
-    # year - the year to check
-    # month - the month to check
-    #
-    # Returns a double.
-    def total_year_profit(year)
-      categories.keys.inject(0) do |sum, category|
-        sum + (category_year_profit(category, year) || 0)
-      end
-    end
-
     # Public: Calculates the year profitability total.
     #
     # year - the year to check
     #
     # Returns a double.
     def total_year_profitability(year)
-      if profit = total_year_profit(year)
-        deposits = (total_year_balance(year - 1) || 0) + (positive_total_year_input(year) || 0)
-        profit / BigDecimal(deposits, 10)
+      balance = total_year_balance(year)
+      input = total_year_input(year) || 0
+      output = total_year_output(year) || 0
+
+      previous_balance = total_year_balance(year - 1) || 0
+
+      if balance
+        v = (balance == 0 ? output : previous_balance + input)
+        profit = balance - input - previous_balance
+        profit / BigDecimal.new(v, 10) if v != 0
       end
     end
 

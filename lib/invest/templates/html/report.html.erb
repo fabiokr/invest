@@ -141,9 +141,9 @@
                   <tr class="profitability">
                     <td>Rentabilidade</td>
                     <% (1..12).each do |month| %>
-                      <td><%# percent category_month_profitability(category, year, month) %></td>
+                      <td><%= percent category_month_profitability(category, year, month) %></td>
                     <% end %>
-                    <td><%# percent category_year_profitability(category, year) %></td>
+                    <td><%= percent category_year_profitability(category, year) %></td>
                     <td></td>
                   </tr>
 
@@ -163,7 +163,7 @@
 
                 <!-- Totals -->
                 <tr class="applications">
-                  <td rowspan="4" class="total">Total</td>
+                  <td rowspan="3" class="total">Total</td>
                   <td>Aporte</td>
                   <% (1..12).each do |month| %>
                     <td><%= money total_month_input(year, month) %></td>
@@ -184,18 +184,9 @@
                 <tr class="profitability">
                   <td>Rentabilidade</td>
                   <% (1..12).each do |month| %>
-                    <td><%# percent total_month_profitability(year, month) %></td>
+                    <td><%= percent total_month_profitability(year, month) %></td>
                   <% end %>
-                  <td><%# percent total_year_profitability(year) %></td>
-                  <td></td>
-                </tr>
-
-                <tr class="weight">
-                  <td>Peso</td>
-                  <% (1..12).each do |month| %>
-                    <td></td>
-                  <% end %>
-                  <td></td>
+                  <td><%= percent total_year_profitability(year) %></td>
                   <td></td>
                 </tr>
               </tbody>
