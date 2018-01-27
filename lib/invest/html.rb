@@ -79,8 +79,6 @@ class Invest
       if value
         formatted_value = "%.2f\%" % (value * 100).round(2)
 
-        puts value
-
         if span
           number_span(formatted_value, value)
         else

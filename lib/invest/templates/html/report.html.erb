@@ -15,7 +15,45 @@
         <label for="tab-dashboard" class="tab-label">Carteira</label>
 
         <div class="tab-content">
-          Carteira
+          <% year = year_range.last %>
+
+          <table class="portfolio">
+            <thead>
+              <tr>
+                <th>Ativo</th>
+                <th>Valor</th>
+                <th>Peso Portfolio</th>
+                <th>Peso Grupo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% categories(year).each do |category, assets| %>
+                <tr class="category">
+                  <td><%= category %></td>
+                  <td><%= money category_year_balance(category, year) %></td>
+                  <td><%= percent category_year_weight(category, year), span: false %></td>
+                  <td></td>
+                </tr>
+
+                <% if assets.size > 1 %>
+                  <% assets.select { |asset| asset_year_balance(asset, year) > 0 }.sort { |a, b| asset_year_balance(a, year) <=> asset_year_balance(b, year) }.reverse.each do |asset| %>
+                    <tr class="asset">
+                      <td><%= asset %></td>
+                      <td><%= money asset_year_balance(asset, year) %></td>
+                      <td></td>
+                      <td><%= percent asset_year_weight(asset, year), span: false %></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <tr class="total">
+                <td>Total</td>
+                <td><%= money total_year_balance(year) %></td>
+                <td>100%</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 

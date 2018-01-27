@@ -64,7 +64,7 @@ body {
   }
 }
 
-table.history {
+table.history, table.portfolio {
   border-collapse: collapse;
   width: 100%;
 
@@ -129,6 +129,18 @@ table.history {
     display: block;
     height: 800px;
     overflow: auto;
+  }
+}
+
+table.portfolio {
+  tr.category td {
+    background-color: #bfb9b9;
+    font-weight: bold;
+  }
+
+  tr.total td {
+    background-color: #94a3a0;
+    font-weight: bold;
   }
 }
 

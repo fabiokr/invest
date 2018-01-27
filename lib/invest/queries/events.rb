@@ -445,6 +445,20 @@ class Invest
       end
     end
 
+    # Public: Calculates the category year weight.
+    #
+    # category - the category name
+    # year - the year to check
+    #
+    # Returns a double.
+    def category_year_weight(category, year)
+      balance = category_year_balance(category, year)
+
+      if balance && balance > 0
+        balance / BigDecimal.new(total_year_balance(year), 10)
+      end
+    end
+
     # Public: Calculates a month deposits total.
     #
     # year - the year to check
