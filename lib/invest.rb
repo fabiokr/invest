@@ -65,7 +65,7 @@ class Invest
       date, asset, category, quantity, price, brokerage = event.to_a.map(&:last)
 
       # formats values before sending to the db
-      date = Date.strptime(date, '%d/%m/%y').to_s
+      date = Date.strptime(date, '%Y-%m-%d').to_s
       quantity = quantity.gsub(",", ".").to_f * 100
       price = price.gsub(",", ".").to_f * 100
       brokerage = brokerage.gsub(",", ".").to_f * 100
