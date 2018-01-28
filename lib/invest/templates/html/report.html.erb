@@ -22,8 +22,8 @@
               <tr>
                 <th>Ativo</th>
                 <th>Valor</th>
-                <th>Peso Portfolio</th>
-                <th>Peso Grupo</th>
+                <th>Rentabilidade</th>
+                <th>Peso</th>
               </tr>
             </thead>
             <tbody>
@@ -31,8 +31,8 @@
                 <tr class="category">
                   <td><%= category %></td>
                   <td><%= money category_year_balance(category, year) %></td>
+                  <td>???</td>
                   <td><%= percent category_year_weight(category, year), span: false %></td>
-                  <td></td>
                 </tr>
 
                 <% if assets.size > 1 %>
@@ -40,7 +40,7 @@
                     <tr class="asset">
                       <td><%= asset %></td>
                       <td><%= money asset_year_balance(asset, year) %></td>
-                      <td></td>
+                      <td><%= percent asset_total_profitability(asset) %></td>
                       <td><%= percent asset_year_weight(asset, year), span: false %></td>
                     </tr>
                   <% end %>
@@ -49,8 +49,8 @@
               <tr class="total">
                 <td>Total</td>
                 <td><%= money total_year_balance(year) %></td>
+                <td>???</td>
                 <td>100%</td>
-                <td></td>
               </tr>
             </tbody>
           </table>
@@ -94,7 +94,7 @@
                         <td><%= money asset_month_input(asset, year, month) %></td>
                       <% end %>
                       <td><%= money asset_year_input(asset, year) %></td>
-                      <td></td>
+                      <td><%= money asset_total_input(asset, year) %></td>
                     </tr>
 
                     <tr class="applications">
@@ -103,7 +103,7 @@
                         <td><%= money asset_month_output(asset, year, month) %></td>
                       <% end %>
                       <td><%= money asset_year_output(asset, year) %></td>
-                      <td></td>
+                      <td><%= money asset_total_output(asset, year) %></td>
                     </tr>
 
                     <tr class="purchase-price">
@@ -134,7 +134,7 @@
                         <td><%= percent asset_month_profitability(asset, year, month) if asset_month_show?(asset, year, month) %></td>
                       <% end %>
                       <td><%= percent asset_year_profitability(asset, year) %></td>
-                      <td></td>
+                      <td><%= percent asset_total_profitability(asset, year) %></td>
                     </tr>
 
                     <tr class="weight">

@@ -313,6 +313,45 @@ class Invest
       end
     end
 
+    # Public: Calculates the total deposits for an asset up to an year.
+    #
+    # asset - the asset name
+    # year - the year
+    #
+    # Returns a double.
+    def asset_total_input(asset, year = year_range.last)
+      (year_range.first..year).inject(0) do |sum, y|
+        sum + (asset_year_input(asset, y) || 0)
+      end
+    end
+
+    # Public: Calculates the total withdraws for an asset up to an year.
+    #
+    # asset - the asset name
+    # year - the year
+    #
+    # Returns a double.
+    def asset_total_output(asset, year = year_range.last)
+      (year_range.first..year).inject(0) do |sum, y|
+        sum + (asset_year_output(asset, y) || 0)
+      end
+    end
+
+    # Public: Calculates the total profitability for an asset up to an year.
+    #
+    # asset - the asset name
+    # year - the year
+    #
+    # Returns a double.
+    def asset_total_profitability(asset, year = year_range.last)
+      price = asset_month_price(asset, year, 12)
+      purchase_price = asset_month_average_purchase_price(asset, year, 12)
+
+      if price
+        (price - purchase_price) / BigDecimal(purchase_price, 10)
+      end
+    end
+
     # Public: Calculates a month deposits for a category.
     #
     # category - the category name
