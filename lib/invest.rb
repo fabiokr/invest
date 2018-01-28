@@ -11,11 +11,15 @@ class Invest
     force_quotes: true
   }
 
+  attr_reader :options
+
   # Public: Initializes the Invest class.
   #
   # options - initialization options
-  def initialize(options = {})
-    @options = options
+  def initialize(options = nil)
+    @options = options || {
+      ignore: []
+    }
 
     import_data_from_events!
   end
@@ -60,9 +64,9 @@ class Invest
   # Returns nothing.
   def import_data_from_events!
     read_csv(EVENTS_FILE).map do |event|
-      next if event.header_row?
-
       date, asset, category, quantity, price, brokerage = event.to_a.map(&:last)
+
+      next if event.header_row? || options[:ignore].include?(asset)
 
       # formats values before sending to the db
       date = Date.strptime(date, '%Y-%m-%d').to_s

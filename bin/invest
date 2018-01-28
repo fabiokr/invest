@@ -19,6 +19,8 @@ else
   case ARGV[0]
   when "html"
     Invest.new.html_report!(get_arg(1, :file))
+  when "html-no-bitcoin"
+    Invest.new(ignore: %w(Bitcoin)).html_report!(get_arg(1, :file))
   else
     puts "Invalid output '#{ARGV[0]}'"
     exit 1
