@@ -55,20 +55,15 @@ class Invest
 
     # Public: Gets the available categories and their assets from the data.
     #
-    # year - a year to filter
-    #
     # Returns a Hash.
-    def categories(year = nil)
+    def categories
       hash = {}
 
       db.execute(
         "SELECT DISTINCT asset, category FROM events ORDER BY category, asset;"
       ).map do |(asset, category)|
-        # reject assets withouth balance on the year
-        if year.nil? || asset_year_balance(asset, year)
-          hash[category] ||= []
-          hash[category] << asset
-        end
+        hash[category] ||= []
+        hash[category] << asset
       end
 
       hash
@@ -223,10 +218,12 @@ class Invest
     # Returns a boolean.
     def asset_month_show?(asset, year, month)
       balance = asset_month_balance(asset, year, month)
+      input = asset_month_input(asset, year, month)
+      output = asset_month_output(asset, year, month)
 
       # true if there was deposits/withdraws, or if balance is > 0
-      asset_month_input(asset, year, month) ||
-        asset_month_output(asset, year, month) ||
+      (input && input > 0) ||
+        (output && output < 0) ||
         (balance && balance > 0)
     end
 
@@ -311,6 +308,23 @@ class Invest
         category = asset_category(asset)
         balance / BigDecimal.new(category_year_balance(category, year), 10)
       end
+    end
+
+    # Public: Checks if the asset has data to show on the given year.
+    #
+    # asset - the asset name
+    # year - the year to check
+    #
+    # Returns a boolean.
+    def asset_year_show?(asset, year)
+      balance = asset_year_balance(asset, year)
+      input = asset_year_input(asset, year)
+      output = asset_year_output(asset, year)
+
+      # true if there was deposits/withdraws, or if balance is > 0
+      (input && input > 0) ||
+        (output && output < 0) ||
+        (balance && balance > 0)
     end
 
     # Public: Calculates the total deposits for an asset up to an year.

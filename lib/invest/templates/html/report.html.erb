@@ -27,7 +27,7 @@
               </tr>
             </thead>
             <tbody>
-              <% categories(year).sort_by { |category, assets| category_year_balance(category, year) }.reverse.each do |category, assets| %>
+              <% categories.sort_by { |category, assets| category_year_balance(category, year) }.reverse.each do |category, assets| %>
                 <tr class="category">
                   <td><%= category %></td>
                   <td><%= money category_year_balance(category, year) %></td>
@@ -36,6 +36,8 @@
                 </tr>
 
                 <% assets.select { |asset| asset_year_balance(asset, year) > 0 }.sort_by { |asset| asset_year_balance(asset, year) }.reverse.each do |asset| %>
+                  <% next unless asset_year_show?(asset, year) %>
+
                   <tr class="asset">
                     <td><%= asset %></td>
                     <td><%= money asset_year_balance(asset, year) %></td>
@@ -83,8 +85,10 @@
                 </tr>
               </thead>
               <tbody>
-                <% categories(year).each do |category, assets| %>
+                <% categories.each do |category, assets| %>
                   <% assets.each do |asset| %>
+                    <% next unless asset_year_show?(asset, year) %>
+
                     <tr class="applications">
                       <td rowspan="6" class="asset"><%= asset %></td>
                       <td>Aportes</td>
