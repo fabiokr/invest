@@ -31,7 +31,7 @@
                 <tr class="category">
                   <td><%= category %></td>
                   <td><%= money category_year_balance(category, year) %></td>
-                  <td>???</td>
+                  <td><%= percent category_total_profitability(category) %></td>
                   <td><%= percent category_year_weight(category, year), span: false %></td>
                 </tr>
 
@@ -49,7 +49,7 @@
               <tr class="total">
                 <td>Total</td>
                 <td><%= money total_year_balance(year) %></td>
-                <td>???</td>
+                <td><%= percent total_profitability %></td>
                 <td>100%</td>
               </tr>
             </tbody>
@@ -201,13 +201,22 @@
 
                 <!-- Totals -->
                 <tr class="applications">
-                  <td rowspan="3" class="total">Total</td>
-                  <td>Aporte</td>
+                  <td rowspan="4" class="total">Total</td>
+                  <td>Aportes</td>
                   <% (1..12).each do |month| %>
                     <td><%= money total_month_input(year, month) %></td>
                   <% end %>
                   <td><%= money total_year_input(year) %></td>
-                  <td></td>
+                  <td><%= money total_input(year) %></td>
+                </tr>
+
+                <tr class="applications">
+                  <td>Retiradas</td>
+                  <% (1..12).each do |month| %>
+                    <td><%= money total_month_output(year, month) %></td>
+                  <% end %>
+                  <td><%= money total_year_output(year) %></td>
+                  <td><%= money total_output(year) %></td>
                 </tr>
 
                 <tr class="balance">
@@ -225,7 +234,7 @@
                     <td><%= percent total_month_profitability(year, month) %></td>
                   <% end %>
                   <td><%= percent total_year_profitability(year) %></td>
-                  <td></td>
+                  <td><%= percent total_profitability(year) %></td>
                 </tr>
               </tbody>
             </table>

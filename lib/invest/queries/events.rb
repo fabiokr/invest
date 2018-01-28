@@ -649,42 +649,42 @@ class Invest
       end
     end
 
-    # Public: Calculates a year deposits for an asset.
+    # Public: Calculates the total deposits totals up to an year.
     #
-    # asset - the asset name
     # year - the year to check
     #
     # Returns a double.
-    def positive_asset_year_input(asset, year)
-      start_date = Date.new(year, 1, 1)
-      end_date = Date.new(year, 12, 31)
-
-      db.execute(
-        "SELECT SUM((quantity/100.0) * price) FROM events WHERE asset = ? AND quantity > 0 AND date(date) >= ? AND date(date) <= ?;",
-        [asset, start_date.to_s, end_date.to_s]
-      ).first.first
-    end
-
-    # Public: Calculates a year withdraws and deposits for a category.
-    #
-    # category - the category name
-    # year - the year to check
-    #
-    # Returns a double.
-    def positive_category_year_input(category, year)
-      categories[category].inject(0) do |sum, asset|
-        sum + (positive_asset_year_input(asset, year) || 0)
+    def total_input(year = year_range.last)
+      categories.keys.inject(0) do |sum, category|
+        sum + (category_total_input(category, year) || 0)
       end
     end
 
-    # Public: Calculates a year withdraws and deposits total.
+    # Public: Calculates the total withdraws totals up to an year.
     #
     # year - the year to check
     #
     # Returns a double.
-    def positive_total_year_input(year)
+    def total_output(year = year_range.last)
       categories.keys.inject(0) do |sum, category|
-        sum + (positive_category_year_input(category, year) || 0)
+        sum + (category_total_output(category, year) || 0)
+      end
+    end
+
+    # Public: Calculates the total profitability total up to an year.
+    #
+    # year - the year to check
+    #
+    # Returns a double.
+    def total_profitability(year = year_range.last)
+      balance = total_year_balance(year)
+      input = total_input(year) || 0
+      output = total_output(year) || 0
+
+      if balance
+        v = (balance == 0 ? output : input)
+        profit = balance - input
+        profit / BigDecimal.new(v, 10) if v != 0
       end
     end
 
