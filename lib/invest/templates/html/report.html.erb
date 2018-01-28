@@ -155,7 +155,7 @@
                       <td><%= money category_month_input(category, year, month) %></td>
                     <% end %>
                     <td><%= money category_year_input(category, year) %></td>
-                    <td></td>
+                    <td><%= money category_total_input(category, year) %></td>
                   </tr>
 
                   <tr class="applications">
@@ -164,7 +164,7 @@
                       <td><%= money category_month_output(category, year, month) %></td>
                     <% end %>
                     <td><%= money category_year_output(category, year) %></td>
-                    <td></td>
+                    <td><%= money category_total_output(category, year) %></td>
                   </tr>
 
                   <tr class="balance">
@@ -182,7 +182,7 @@
                       <td><%= percent category_month_profitability(category, year, month) %></td>
                     <% end %>
                     <td><%= percent category_year_profitability(category, year) %></td>
-                    <td></td>
+                    <td><%= percent category_total_profitability(category, year) %></td>
                   </tr>
 
                   <tr class="weight">

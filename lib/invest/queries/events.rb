@@ -498,6 +498,48 @@ class Invest
       end
     end
 
+    # Public: Calculates the total deposits for a category up to an year.
+    #
+    # category - the category name
+    # year - the year to check
+    #
+    # Returns a double.
+    def category_total_input(category, year = year_range.last)
+      categories[category].inject(0) do |sum, asset|
+        sum + (asset_total_input(asset, year) || 0)
+      end
+    end
+
+    # Public: Calculates the total profitability for a category up to an year.
+    #
+    # category - the category name
+    # year - the year to check
+    #
+    # Returns a double.
+    def category_total_profitability(category, year = year_range.last)
+      balance = category_year_balance(category, year)
+      input = category_total_input(category, year) || 0
+      output = category_total_output(category, year) || 0
+
+      if balance
+        v = (balance == 0 ? output : input)
+        profit = balance - input
+        profit / BigDecimal.new(v, 10) if v != 0
+      end
+    end
+
+    # Public: Calculates the total withdraws for a category up to an year.
+    #
+    # category - the category name
+    # year - the year to check
+    #
+    # Returns a double.
+    def category_total_output(category, year = year_range.last)
+      categories[category].inject(0) do |sum, asset|
+        sum + (asset_total_output(asset, year) || 0)
+      end
+    end
+
     # Public: Calculates a month deposits total.
     #
     # year - the year to check
