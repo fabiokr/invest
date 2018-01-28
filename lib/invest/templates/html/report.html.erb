@@ -35,15 +35,13 @@
                   <td><%= percent category_year_weight(category, year), span: false %></td>
                 </tr>
 
-                <% if assets.size > 1 %>
-                  <% assets.select { |asset| asset_year_balance(asset, year) > 0 }.sort { |a, b| asset_year_balance(a, year) <=> asset_year_balance(b, year) }.reverse.each do |asset| %>
-                    <tr class="asset">
-                      <td><%= asset %></td>
-                      <td><%= money asset_year_balance(asset, year) %></td>
-                      <td><%= percent asset_total_profitability(asset) %></td>
-                      <td><%= percent asset_year_weight(asset, year), span: false %></td>
-                    </tr>
-                  <% end %>
+                <% assets.select { |asset| asset_year_balance(asset, year) > 0 }.sort { |a, b| asset_year_balance(a, year) <=> asset_year_balance(b, year) }.reverse.each do |asset| %>
+                  <tr class="asset">
+                    <td><%= asset %></td>
+                    <td><%= money asset_year_balance(asset, year) %></td>
+                    <td><%= percent asset_total_profitability(asset) %></td>
+                    <td><%= percent asset_year_weight(asset, year), span: false %></td>
+                  </tr>
                 <% end %>
               <% end %>
               <tr class="total">
