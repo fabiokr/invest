@@ -57,6 +57,45 @@
         </div>
       </div>
 
+      <div class="tab">
+        <input type="radio" name="css-tabs" id="tab-ir" class="tab-switch">
+        <label for="tab-ir" class="tab-label">IR</label>
+
+        <div class="tab-content">
+          <table class="history">
+            <thead>
+              <tr>
+                <th>Mês/Ano</th>
+                <th>Ativo</th>
+                <th>Vendas</th>
+                <th>Lucro/Prejuízo</th>
+                <th>IR Devido</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% unless ir.empty? %>
+                <% previous_month = ir.first[1] %>
+
+                <% ir.each do |line| %>
+                  <% if line[1] != previous_month %>
+                    <% previous_month = line[1] %>
+                    <tr class="spacer"><td colspan="5"></td></tr>
+                  <% end %>
+
+                  <tr>
+                    <td><%= line[0] %>/<%= line[1] %></td>
+                    <td><%= line[2] %></td>
+                    <td><%= money line[3] %></td>
+                    <td><%= money line[4] %></td>
+                    <td><%= money line[5] if line[5] %></td>
+                  </tr>
+                <% end %>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <% year_range.to_a.reverse.each do |year| %>
         <div class="tab">
           <input type="radio" name="css-tabs" id="tab-<%= year %>" class="tab-switch">
@@ -90,7 +129,7 @@
 
                   <% assets.each do |asset| %>
                     <tr class="applications">
-                      <td rowspan="7" class="asset"><%= asset %></td>
+                      <td rowspan="6" class="asset"><%= asset %></td>
                       <td>Aportes</td>
                       <% (1..12).each do |month| %>
                         <td><%= money asset_month_input(asset, year, month) %></td>
@@ -130,15 +169,6 @@
                       <td></td>
                     </tr>
 
-                    <tr class="ir">
-                      <td>IR</td>
-                      <% (1..12).each do |month| %>
-                        <td><%= money asset_month_ir(asset, year, month), span: false %></td>
-                      <% end %>
-                      <td></td>
-                      <td></td>
-                    </tr>
-
                     <tr class="profitability">
                       <td>Rentabilidade</td>
                       <% (1..12).each do |month| %>
@@ -161,7 +191,7 @@
                   <!-- Categories -->
                   <% unless assets.empty? %>
                     <tr class="applications">
-                      <td rowspan="6" class="category"><%= category %></td>
+                      <td rowspan="5" class="category"><%= category %></td>
                       <td>Aportes</td>
                       <% (1..12).each do |month| %>
                         <td><%= money category_month_input(category, year, month) %></td>
@@ -185,15 +215,6 @@
                         <td><%= money category_month_balance(category, year, month) %></td>
                       <% end %>
                       <td><%= money category_year_balance(category, year) %></td>
-                      <td></td>
-                    </tr>
-
-                    <tr class="ir">
-                      <td>IR</td>
-                      <% (1..12).each do |month| %>
-                        <td><%= money category_month_ir(category, year, month), span: false %></td>
-                      <% end %>
-                      <td></td>
                       <td></td>
                     </tr>
 

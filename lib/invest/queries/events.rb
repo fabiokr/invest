@@ -81,6 +81,33 @@ class Invest
       categories.find { |category, assets| assets.include?(asset) }.first
     end
 
+    # Private: Builds income taxes data.
+    #
+    # Returns an Array.
+    def ir
+      data = []
+
+      year_range.each do |year|
+        (1..12).each do |month|
+          categories.each do |category, assets|
+            next unless IR_CATEGORIES.include?(category)
+
+            assets.each do |asset|
+              output = asset_month_output(asset, year, month)
+              profit = profit = asset_month_profit(asset, year, month)
+              ir = asset_month_ir(asset, year, month)
+
+              if output && output < 0
+                data << [year, month, asset, -output, profit, ir]
+              end
+            end
+          end
+        end
+      end
+
+      data.reverse
+    end
+
     # Public: Calculates a month deposits for an asset.
     #
     # asset - the asset name
@@ -188,6 +215,23 @@ class Invest
       sum * price if price
     end
 
+    # Public: Calculates a month profit for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_profit(asset, year, month)
+      output = asset_month_output(asset, year, month)
+
+      if output && output < 0
+        output_quantity = -asset_month_output_quantity(asset, year, month)
+        purchase_price = asset_month_average_purchase_price(asset, year, month)
+        -output - (output_quantity * purchase_price)
+      end
+    end
+
     # Public: Calculates a month owned income tax for an asset.
     #
     # asset - the asset name
@@ -196,12 +240,7 @@ class Invest
     #
     # Returns a double.
     def asset_month_ir(asset, year, month)
-      output = asset_month_output(asset, year, month)
-
-      if IR_CATEGORIES.include?(asset_category(asset)) && output && output < 0
-        output_quantity = -asset_month_output_quantity(asset, year, month)
-        purchase_price = asset_month_average_purchase_price(asset, year, month)
-        profit = -output - (output_quantity * purchase_price)
+      if (profit = asset_month_profit(asset, year, month)) && profit > 0
         profit * IR
       end
     end
@@ -755,7 +794,7 @@ class Invest
       method.start_with?("asset") ||
         method.start_with?("category") ||
         method.start_with?("total")
-    end + %i(year_range categories))
+    end + %i(year_range categories ir))
 
     private
 
