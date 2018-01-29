@@ -90,7 +90,7 @@
 
                   <% assets.each do |asset| %>
                     <tr class="applications">
-                      <td rowspan="6" class="asset"><%= asset %></td>
+                      <td rowspan="7" class="asset"><%= asset %></td>
                       <td>Aportes</td>
                       <% (1..12).each do |month| %>
                         <td><%= money asset_month_input(asset, year, month) %></td>
@@ -130,6 +130,15 @@
                       <td></td>
                     </tr>
 
+                    <tr class="ir">
+                      <td>IR</td>
+                      <% (1..12).each do |month| %>
+                        <td><%= money asset_month_ir(asset, year, month), span: false %></td>
+                      <% end %>
+                      <td></td>
+                      <td></td>
+                    </tr>
+
                     <tr class="profitability">
                       <td>Rentabilidade</td>
                       <% (1..12).each do |month| %>
@@ -152,7 +161,7 @@
                   <!-- Categories -->
                   <% unless assets.empty? %>
                     <tr class="applications">
-                      <td rowspan="5" class="category"><%= category %></td>
+                      <td rowspan="6" class="category"><%= category %></td>
                       <td>Aportes</td>
                       <% (1..12).each do |month| %>
                         <td><%= money category_month_input(category, year, month) %></td>
@@ -176,6 +185,15 @@
                         <td><%= money category_month_balance(category, year, month) %></td>
                       <% end %>
                       <td><%= money category_year_balance(category, year) %></td>
+                      <td></td>
+                    </tr>
+
+                    <tr class="ir">
+                      <td>IR</td>
+                      <% (1..12).each do |month| %>
+                        <td><%= money category_month_ir(category, year, month), span: false %></td>
+                      <% end %>
+                      <td></td>
                       <td></td>
                     </tr>
 

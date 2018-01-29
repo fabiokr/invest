@@ -3,6 +3,9 @@ require "bigdecimal"
 
 class Invest
   class EventsQuery
+    IR = BigDecimal.new(0.15, 10)
+    IR_CATEGORIES = %w(Acoes Opcoes Ativos)
+
     # Public: Gets the current month last day date.
     #
     # Returns a date.
@@ -112,6 +115,23 @@ class Invest
       ).first.first
     end
 
+    # Public: Calculates a month withdraws quantity for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_output_quantity(asset, year, month)
+      start_date = Date.civil(year, month, 1)
+      end_date = Date.civil(year, month, -1)
+
+      db.execute(
+        "SELECT SUM(quantity/100.0) FROM events WHERE asset = ? AND quantity < 0 AND date(date) >= ? AND date(date) <= ?;",
+        [asset, start_date.to_s, end_date.to_s]
+      ).first.first
+    end
+
     # Public: Calculates a month average purchase price for an asset.
     #
     # asset - the asset name
@@ -166,6 +186,24 @@ class Invest
       price = asset_month_price(asset, year, month)
 
       sum * price if price
+    end
+
+    # Public: Calculates a month owned income tax for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_ir(asset, year, month)
+      output = asset_month_output(asset, year, month)
+
+      if IR_CATEGORIES.include?(asset_category(asset)) && output && output < 0
+        output_quantity = -asset_month_output_quantity(asset, year, month)
+        purchase_price = asset_month_average_purchase_price(asset, year, month)
+        profit = -output - (output_quantity * purchase_price)
+        profit * IR
+      end
     end
 
     # Public: Calculates the month profitability for an asset.
@@ -402,6 +440,21 @@ class Invest
     def category_month_balance(category, year, month)
       categories[category].inject(0) do |sum, asset|
         sum + (asset_month_balance(asset, year, month) || 0)
+      end
+    end
+
+    # Public: Calculates a month owned income tax for a category.
+    #
+    # category - the category name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def category_month_ir(category, year, month)
+      if IR_CATEGORIES.include?(category)
+        categories[category].inject(0) do |sum, asset|
+          sum + (asset_month_ir(asset, year, month) || 0)
+        end
       end
     end
 
