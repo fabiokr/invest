@@ -97,7 +97,7 @@ class Invest
               profit = profit = asset_month_profit(asset, year, month)
               ir = asset_month_ir(asset, year, month)
 
-              if output && output < 0
+              if output && output <= 0
                 data << [year, month, asset, -output, profit, ir]
               end
             end
@@ -225,7 +225,7 @@ class Invest
     def asset_month_profit(asset, year, month)
       output = asset_month_output(asset, year, month)
 
-      if output && output < 0
+      if output && output <= 0
         output_quantity = -asset_month_output_quantity(asset, year, month)
         purchase_price = asset_month_average_purchase_price(asset, year, month)
         -output - (output_quantity * purchase_price)
