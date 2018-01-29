@@ -469,20 +469,12 @@ class Invest
     #
     # Returns a double.
     def category_month_profitability(category, year, month)
-
-
-
-      month_balance = category_month_balance(category, year, month)
-      month_input = category_month_input(category, year, month) || 0
-      month_output = category_month_output(category, year, month) || 0
-
-      previous_month = Date.new(year, month, -1) << 1
-      previous_month_balance = category_month_balance(category, previous_month.year, previous_month.month) || 0
-
-      if month_balance
-        v = (month_balance == 0 ? -month_output : previous_month_balance + month_input)
-        profit = month_balance + (-month_output) - month_input - previous_month_balance
-        profit / BigDecimal.new(v, 10) if v != 0
+      categories[category].inject(0) do |sum, asset|
+        if (weight = asset_month_weight(asset, year, month)) && weight > 0
+          sum + (asset_month_profitability(asset, year, month) * weight)
+        else
+          sum
+        end
       end
     end
 
@@ -659,17 +651,12 @@ class Invest
     #
     # Returns a double.
     def total_month_profitability(year, month)
-      balance = total_month_balance(year, month)
-      input = total_month_input(year, month) || 0
-      output = total_month_output(year, month) || 0
-
-      previous_month = Date.new(year, month, -1) << 1
-      previous_balance = total_month_balance(previous_month.year, previous_month.month) || 0
-
-      if balance
-        v = (balance == 0 ? -output : previous_balance + input)
-        profit = balance + (-output) - input - previous_balance
-        profit / BigDecimal.new(v, 10) if v != 0
+      categories.keys.inject(0) do |sum, category|
+        if (weight = category_month_weight(category, year, month)) && weight > 0
+          sum + (category_month_profitability(category, year, month) * weight)
+        else
+          sum
+        end
       end
     end
 
