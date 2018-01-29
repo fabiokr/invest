@@ -146,6 +146,14 @@ table.portfolio {
     background-color: #94a3a0;
     font-weight: bold;
   }
+
+  tr.asset {
+    display: none;
+  }
+
+  thead tr, tr.category {
+    cursor: pointer;
+  }
 }
 
 .positive {
