@@ -421,8 +421,8 @@ class Invest
       previous_month_balance = category_month_balance(category, previous_month.year, previous_month.month) || 0
 
       if month_balance
-        v = (month_balance == 0 ? month_output : previous_month_balance + month_input)
-        profit = month_balance - month_input - previous_month_balance
+        v = (month_balance == 0 ? -month_output : previous_month_balance + month_input)
+        profit = month_balance + (-month_output) - month_input - previous_month_balance
         profit / BigDecimal.new(v, 10) if v != 0
       end
     end
@@ -492,8 +492,8 @@ class Invest
       previous_year_balance = category_year_balance(category, year - 1) || 0
 
       if year_balance
-        v = (year_balance == 0 ? year_output : previous_year_balance + year_input)
-        profit = year_balance - year_input - previous_year_balance
+        v = (year_balance == 0 ? -year_output : previous_year_balance + year_input)
+        profit = year_balance + (-year_output) - year_input - previous_year_balance
         profit / BigDecimal.new(v, 10) if v != 0
       end
     end
@@ -536,8 +536,8 @@ class Invest
       output = category_total_output(category, year) || 0
 
       if balance
-        v = (balance == 0 ? output : input)
-        profit = balance - input
+        v = (balance == 0 ? -output : input)
+        profit = balance + (-output) - input
         profit / BigDecimal.new(v, 10) if v != 0
       end
     end
@@ -605,8 +605,8 @@ class Invest
       previous_balance = total_month_balance(previous_month.year, previous_month.month) || 0
 
       if balance
-        v = (balance == 0 ? output : previous_balance + input)
-        profit = balance - input - previous_balance
+        v = (balance == 0 ? -output : previous_balance + input)
+        profit = balance + (-output) - input - previous_balance
         profit / BigDecimal.new(v, 10) if v != 0
       end
     end
@@ -657,8 +657,8 @@ class Invest
       previous_balance = total_year_balance(year - 1) || 0
 
       if balance
-        v = (balance == 0 ? output : previous_balance + input)
-        profit = balance - input - previous_balance
+        v = (balance == 0 ? -output : previous_balance + input)
+        profit = balance + (-output) - input - previous_balance
         profit / BigDecimal.new(v, 10) if v != 0
       end
     end
@@ -696,8 +696,8 @@ class Invest
       output = total_output(year) || 0
 
       if balance
-        v = (balance == 0 ? output : input)
-        profit = balance - input
+        v = (balance == 0 ? -output : input)
+        profit = balance + (-output) - input
         profit / BigDecimal.new(v, 10) if v != 0
       end
     end

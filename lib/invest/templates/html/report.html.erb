@@ -86,9 +86,9 @@
               </thead>
               <tbody>
                 <% categories.each do |category, assets| %>
-                  <% assets.each do |asset| %>
-                    <% next unless asset_year_show?(asset, year) %>
+                  <% assets = assets.select { |asset| asset_year_show?(asset, year) } %>
 
+                  <% assets.each do |asset| %>
                     <tr class="applications">
                       <td rowspan="6" class="asset"><%= asset %></td>
                       <td>Aportes</td>
@@ -150,55 +150,57 @@
                   <% end %>
 
                   <!-- Categories -->
-                  <tr class="applications">
-                    <td rowspan="5" class="category"><%= category %></td>
-                    <td>Aportes</td>
-                    <% (1..12).each do |month| %>
-                      <td><%= money category_month_input(category, year, month) %></td>
-                    <% end %>
-                    <td><%= money category_year_input(category, year) %></td>
-                    <td><%= money category_total_input(category, year) %></td>
-                  </tr>
+                  <% unless assets.empty? %>
+                    <tr class="applications">
+                      <td rowspan="5" class="category"><%= category %></td>
+                      <td>Aportes</td>
+                      <% (1..12).each do |month| %>
+                        <td><%= money category_month_input(category, year, month) %></td>
+                      <% end %>
+                      <td><%= money category_year_input(category, year) %></td>
+                      <td><%= money category_total_input(category, year) %></td>
+                    </tr>
 
-                  <tr class="applications">
-                    <td>Retiradas</td>
-                    <% (1..12).each do |month| %>
-                      <td><%= money category_month_output(category, year, month) %></td>
-                    <% end %>
-                    <td><%= money category_year_output(category, year) %></td>
-                    <td><%= money category_total_output(category, year) %></td>
-                  </tr>
+                    <tr class="applications">
+                      <td>Retiradas</td>
+                      <% (1..12).each do |month| %>
+                        <td><%= money category_month_output(category, year, month) %></td>
+                      <% end %>
+                      <td><%= money category_year_output(category, year) %></td>
+                      <td><%= money category_total_output(category, year) %></td>
+                    </tr>
 
-                  <tr class="balance">
-                    <td>Saldo</td>
-                    <% (1..12).each do |month| %>
-                      <td><%= money category_month_balance(category, year, month) %></td>
-                    <% end %>
-                    <td><%= money category_year_balance(category, year) %></td>
-                    <td></td>
-                  </tr>
+                    <tr class="balance">
+                      <td>Saldo</td>
+                      <% (1..12).each do |month| %>
+                        <td><%= money category_month_balance(category, year, month) %></td>
+                      <% end %>
+                      <td><%= money category_year_balance(category, year) %></td>
+                      <td></td>
+                    </tr>
 
-                  <tr class="profitability">
-                    <td>Rentabilidade</td>
-                    <% (1..12).each do |month| %>
-                      <td><%= percent category_month_profitability(category, year, month) %></td>
-                    <% end %>
-                    <td><%= percent category_year_profitability(category, year) %></td>
-                    <td><%= percent category_total_profitability(category, year) %></td>
-                  </tr>
+                    <tr class="profitability">
+                      <td>Rentabilidade</td>
+                      <% (1..12).each do |month| %>
+                        <td><%= percent category_month_profitability(category, year, month) %></td>
+                      <% end %>
+                      <td><%= percent category_year_profitability(category, year) %></td>
+                      <td><%= percent category_total_profitability(category, year) %></td>
+                    </tr>
 
-                  <tr class="weight">
-                    <td>Peso</td>
-                    <% (1..12).each do |month| %>
-                      <td><%= percent category_month_weight(category, year, month), span: false %></td>
-                    <% end %>
-                    <td></td>
-                    <td></td>
-                  </tr>
+                    <tr class="weight">
+                      <td>Peso</td>
+                      <% (1..12).each do |month| %>
+                        <td><%= percent category_month_weight(category, year, month), span: false %></td>
+                      <% end %>
+                      <td></td>
+                      <td></td>
+                    </tr>
 
-                  <tr class="spacer">
-                    <td colspan="16"></td>
-                  </tr>
+                    <tr class="spacer">
+                      <td colspan="16"></td>
+                    </tr>
+                  <% end %>
                 <% end %>
 
                 <!-- Totals -->

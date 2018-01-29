@@ -4,6 +4,7 @@ require "date"
 
 class Invest
   EVENTS_FILE = "data/events.csv".freeze
+  PRICES_FILE = "data/prices.csv".freeze
 
   CSV_OPTIONS = {
     headers: true,
@@ -22,6 +23,7 @@ class Invest
     }
 
     import_data_from_events!
+    import_data_from_prices!
   end
 
   # Public: Generates an html report.
@@ -76,6 +78,24 @@ class Invest
 
       db.execute "insert into events (date, asset, category, quantity, price, brokerage) values (?, ?, ?, ?, ?, ?)",
         [date, asset, category, quantity, price, brokerage]
+    end
+  end
+
+  # Private: Imports data from the data/prices.csv to the sqlite db.
+  #
+  # Returns nothing.
+  def import_data_from_prices!
+    read_csv(PRICES_FILE).map do |event|
+      date, asset, category, price = event.to_a.map(&:last)
+
+      next if event.header_row? || options[:ignore].include?(asset)
+
+      # formats values before sending to the db
+      date = Date.strptime(date, '%Y-%m-%d').to_s
+      price = price.gsub(",", ".").to_f * 100
+
+      db.execute "insert into events (date, asset, category, quantity, price, brokerage) values (?, ?, ?, 0, ?, 0)",
+        [date, asset, category, price]
     end
   end
 
