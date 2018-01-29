@@ -32,6 +32,8 @@ class Invest
   #
   # Returns nothing.
   def html_report!(file)
+    puts "Generating output to #{file}"
+
     Html.new(EventsQuery.new(self)).save!(file)
   end
 
@@ -65,6 +67,8 @@ class Invest
   #
   # Returns nothing.
   def import_data_from_events!
+    puts "Importing data from #{EVENTS_FILE}"
+
     read_csv(EVENTS_FILE).map do |event|
       date, asset, category, quantity, price, brokerage = event.to_a.map(&:last)
 
@@ -85,6 +89,8 @@ class Invest
   #
   # Returns nothing.
   def import_data_from_prices!
+    puts "Importing data from #{PRICES_FILE}"
+
     read_csv(PRICES_FILE).map do |event|
       date, asset, category, price = event.to_a.map(&:last)
 
