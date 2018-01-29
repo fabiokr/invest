@@ -239,11 +239,14 @@ class Invest
     #
     # Returns a double.
     def asset_month_weight(asset, year, month)
-      balance = asset_month_balance(asset, year, month)
+      output = asset_month_output(asset, year, month) || 0
+      balance = asset_month_balance(asset, year, month) || 0
 
-      if balance && balance > 0
+      if (balance > 0 || output < 0)
         category = asset_category(asset)
-        balance / BigDecimal.new(category_month_balance(category, year, month), 10)
+        category_output = category_month_output(category, year, month) || 0
+        category_balance = category_month_balance(category, year, month) || 0
+        (balance + (-output)) / BigDecimal.new(category_balance + (-category_output), 10)
       end
     end
 
@@ -466,6 +469,9 @@ class Invest
     #
     # Returns a double.
     def category_month_profitability(category, year, month)
+
+
+
       month_balance = category_month_balance(category, year, month)
       month_input = category_month_input(category, year, month) || 0
       month_output = category_month_output(category, year, month) || 0
@@ -488,10 +494,13 @@ class Invest
     #
     # Returns a double.
     def category_month_weight(category, year, month)
-      balance = category_month_balance(category, year, month)
+      output = category_month_output(category, year, month) || 0
+      balance = category_month_balance(category, year, month) || 0
 
-      if balance && balance > 0
-        balance / BigDecimal.new(total_month_balance(year, month), 10)
+      if balance > 0 || output < 0
+        total_output = total_month_output(year, month) || 0
+        total_balance = total_month_balance(year, month) || 0
+        (balance + (-output)) / BigDecimal.new(total_balance + (-total_output), 10)
       end
     end
 
