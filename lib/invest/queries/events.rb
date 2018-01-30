@@ -253,20 +253,15 @@ class Invest
     #
     # Returns a double.
     def asset_month_profitability(asset, year, month)
-      previous_month = Date.new(year, month, 1) << 1
-      previous_month_price = asset_month_price(asset, previous_month.year, previous_month.month)
-      month_price = asset_month_price(asset, year, month)
-      month_purchase_price = asset_month_average_purchase_price(asset, year, month)
-      month_inputs = asset_month_input(asset, year, month)
+      previous = Date.new(year, month, 1) << 1
+      previous_balance = asset_month_balance(asset, previous.year, previous.month) || 0
+      balance = asset_month_balance(asset, year, month)
+      input = asset_month_input(asset, year, month) || 0
+      output = asset_month_output(asset, year, month) || 0
 
-      if month_price
-        # if there were inputs on the month, compare against the average purchase price,
-        # otherwise compare against last months's price
-        if month_inputs && month_inputs > 0
-          (month_price - month_purchase_price) / BigDecimal(month_purchase_price, 10)
-        else
-          (month_price - previous_month_price) / BigDecimal(previous_month_price, 10)
-        end
+      if balance && balance >= 0
+        v = previous_balance + input
+        (balance + (-output) - v) / BigDecimal(v, 10)
       end
     end
 
@@ -359,19 +354,14 @@ class Invest
     #
     # Returns a double.
     def asset_year_profitability(asset, year)
-      previous_year_price = asset_month_price(asset, year - 1, 12)
-      year_price = asset_month_price(asset, year, 12)
-      year_purchase_price = asset_month_average_purchase_price(asset, year, 12)
-      year_inputs = asset_year_input(asset, year)
+      previous_balance = asset_year_balance(asset, year - 1) || 0
+      balance = asset_year_balance(asset, year)
+      input = asset_year_input(asset, year) || 0
+      output = asset_year_output(asset, year) || 0
 
-      if year_price
-        # if there were inputs on the year, compare against the average purchase price,
-        # otherwise compare against last year's price
-        if year_inputs && year_inputs > 0
-          (year_price - year_purchase_price) / BigDecimal(year_purchase_price, 10)
-        else
-          (year_price - previous_year_price) / BigDecimal(previous_year_price, 10)
-        end
+      if balance && balance >= 0
+        v = previous_balance + input
+        (balance + (-output) - v) / BigDecimal(v, 10)
       end
     end
 
@@ -438,11 +428,12 @@ class Invest
     #
     # Returns a double.
     def asset_total_profitability(asset, year = year_range.last)
-      price = asset_month_price(asset, year, 12)
-      purchase_price = asset_month_average_purchase_price(asset, year, 12)
+      balance = asset_year_balance(asset, year)
+      input = asset_total_input(asset, year) || 0
+      output = asset_total_output(asset, year) || 0
 
-      if price
-        (price - purchase_price) / BigDecimal(purchase_price, 10)
+      if balance && balance >= 0
+        (balance + (-output) - input) / BigDecimal(input, 10)
       end
     end
 
@@ -508,12 +499,15 @@ class Invest
     #
     # Returns a double.
     def category_month_profitability(category, year, month)
-      categories[category].inject(0) do |sum, asset|
-        if (weight = asset_month_weight(asset, year, month)) && weight > 0
-          sum + (asset_month_profitability(asset, year, month) * weight)
-        else
-          sum
-        end
+      previous = Date.new(year, month, 1) << 1
+      previous_balance = category_month_balance(category, previous.year, previous.month) || 0
+      balance = category_month_balance(category, year, month)
+      input = category_month_input(category, year, month) || 0
+      output = category_month_output(category, year, month) || 0
+
+      if balance && balance >= 0
+        v = previous_balance + input
+        (balance + (-output) - v) / BigDecimal(v, 10)
       end
     end
 
@@ -578,16 +572,14 @@ class Invest
     #
     # Returns a double.
     def category_year_profitability(category, year)
-      year_balance = category_year_balance(category, year)
-      year_input = category_year_input(category, year) || 0
-      year_output = category_year_output(category, year) || 0
+      previous_balance = category_year_balance(category, year - 1) || 0
+      balance = category_year_balance(category, year)
+      input = category_year_input(category, year) || 0
+      output = category_year_output(category, year) || 0
 
-      previous_year_balance = category_year_balance(category, year - 1) || 0
-
-      if year_balance
-        v = (year_balance == 0 ? -year_output : previous_year_balance + year_input)
-        profit = year_balance + (-year_output) - year_input - previous_year_balance
-        profit / BigDecimal.new(v, 10) if v != 0
+      if balance && balance >= 0
+        v = previous_balance + input
+        (balance + (-output) - v) / BigDecimal(v, 10)
       end
     end
 
@@ -628,10 +620,8 @@ class Invest
       input = category_total_input(category, year) || 0
       output = category_total_output(category, year) || 0
 
-      if balance
-        v = (balance == 0 ? -output : input)
-        profit = balance + (-output) - input
-        profit / BigDecimal.new(v, 10) if v != 0
+      if balance && balance >= 0
+        (balance + (-output) - input) / BigDecimal(input, 10)
       end
     end
 
@@ -690,12 +680,15 @@ class Invest
     #
     # Returns a double.
     def total_month_profitability(year, month)
-      categories.keys.inject(0) do |sum, category|
-        if (weight = category_month_weight(category, year, month)) && weight > 0
-          sum + (category_month_profitability(category, year, month) * weight)
-        else
-          sum
-        end
+      previous = Date.new(year, month, 1) << 1
+      previous_balance = total_month_balance(previous.year, previous.month) || 0
+      balance = total_month_balance(year, month)
+      input = total_month_input(year, month) || 0
+      output = total_month_output(year, month) || 0
+
+      if balance && balance >= 0
+        v = previous_balance + input
+        (balance + (-output) - v) / BigDecimal(v, 10)
       end
     end
 
@@ -738,16 +731,14 @@ class Invest
     #
     # Returns a double.
     def total_year_profitability(year)
+      previous_balance = total_year_balance(year - 1) || 0
       balance = total_year_balance(year)
       input = total_year_input(year) || 0
       output = total_year_output(year) || 0
 
-      previous_balance = total_year_balance(year - 1) || 0
-
-      if balance
-        v = (balance == 0 ? -output : previous_balance + input)
-        profit = balance + (-output) - input - previous_balance
-        profit / BigDecimal.new(v, 10) if v != 0
+      if balance && balance >= 0
+        v = previous_balance + input
+        (balance + (-output) - v) / BigDecimal(v, 10)
       end
     end
 
@@ -783,10 +774,8 @@ class Invest
       input = total_input(year) || 0
       output = total_output(year) || 0
 
-      if balance
-        v = (balance == 0 ? -output : input)
-        profit = balance + (-output) - input
-        profit / BigDecimal.new(v, 10) if v != 0
+      if balance && balance >= 0
+        (balance + (-output) - input) / BigDecimal(input, 10)
       end
     end
 
