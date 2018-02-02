@@ -87,6 +87,17 @@ class Invest
       end
     end
 
+    # Public: Formats a numeric value as a number.
+    #
+    # value - the numeric value
+    #
+    # Returns a String.
+    def number(value)
+      if value
+        "%.2f" % (value).round(2)
+      end
+    end
+
     # Public: Delegates missing methods to events if possible.
     def method_missing(method, *args, &block)
       if events.respond_to?(method)

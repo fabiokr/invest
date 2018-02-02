@@ -193,6 +193,22 @@ class Invest
       price.first if price
     end
 
+    # Public: Calculates a month quantity balance for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_quantity(asset, year, month)
+      date = Date.civil(year, month, -1)
+
+      db.execute(
+        "SELECT SUM(quantity/100.0) FROM events WHERE asset = ? AND date(date) <= date(?);",
+        [asset, date.to_s]
+      ).first.first
+    end
+
     # Public: Calculates a month balance for an asset.
     #
     # asset - the asset name
@@ -259,7 +275,7 @@ class Invest
       input = asset_month_input(asset, year, month) || 0
       output = asset_month_output(asset, year, month) || 0
 
-      if balance && balance >= 0
+      if (balance && balance >= 0) || output < 0
         v = previous_balance + input
         (balance + (-output) - v) / BigDecimal(v, 10)
       end
@@ -359,7 +375,7 @@ class Invest
       input = asset_year_input(asset, year) || 0
       output = asset_year_output(asset, year) || 0
 
-      if balance && balance >= 0
+      if (balance && balance >= 0) || output < 0
         v = previous_balance + input
         (balance + (-output) - v) / BigDecimal(v, 10)
       end
@@ -432,9 +448,7 @@ class Invest
       input = asset_total_input(asset, year) || 0
       output = asset_total_output(asset, year) || 0
 
-      if balance && balance >= 0
-        (balance + (-output) - input) / BigDecimal(input, 10)
-      end
+      (balance + (-output) - input) / BigDecimal(input, 10)
     end
 
     # Public: Calculates a month deposits for a category.
