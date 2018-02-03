@@ -136,18 +136,18 @@
                       <td rowspan="7" class="asset"><%= asset %></td>
                       <td>Aportes</td>
                       <% (1..12).each do |month| %>
-                        <td><%= money asset_month_input(asset, year, month) %></td>
+                        <td><%= money asset_month_input(asset, year, month), span: false %></td>
                       <% end %>
-                      <td><%= money asset_year_input(asset, year) %></td>
+                      <td><%= money asset_year_input(asset, year), span: false %></td>
                       <td></td>
                     </tr>
 
                     <tr class="applications">
                       <td>Retiradas</td>
                       <% (1..12).each do |month| %>
-                        <td><%= money asset_month_output(asset, year, month) %></td>
+                        <td><%= money asset_month_output(asset, year, month), span: false %></td>
                       <% end %>
-                      <td><%= money asset_year_output(asset, year) %></td>
+                      <td><%= money asset_year_output(asset, year), span: false %></td>
                       <td></td>
                     </tr>
 
@@ -211,18 +211,18 @@
                       <td rowspan="5" class="category"><%= category %></td>
                       <td>Aportes</td>
                       <% (1..12).each do |month| %>
-                        <td><%= money category_month_input(category, year, month) %></td>
+                        <td><%= money category_month_input(category, year, month), span: false %></td>
                       <% end %>
-                      <td><%= money category_year_input(category, year) %></td>
+                      <td><%= money category_year_input(category, year), span: false %></td>
                       <td></td>
                     </tr>
 
                     <tr class="applications">
                       <td>Retiradas</td>
                       <% (1..12).each do |month| %>
-                        <td><%= money category_month_output(category, year, month) %></td>
+                        <td><%= money category_month_output(category, year, month), span: false %></td>
                       <% end %>
-                      <td><%= money category_year_output(category, year) %></td>
+                      <td><%= money category_year_output(category, year), span: false %></td>
                       <td></td>
                     </tr>
 
@@ -264,18 +264,18 @@
                   <td rowspan="4" class="total">Total</td>
                   <td>Aportes</td>
                   <% (1..12).each do |month| %>
-                    <td><%= money total_month_input(year, month) %></td>
+                    <td><%= money total_month_input(year, month), span: false %></td>
                   <% end %>
-                  <td><%= money total_year_input(year) %></td>
+                  <td><%= money total_year_input(year), span: false %></td>
                   <td></td>
                 </tr>
 
                 <tr class="applications">
                   <td>Retiradas</td>
                   <% (1..12).each do |month| %>
-                    <td><%= money total_month_output(year, month) %></td>
+                    <td><%= money total_month_output(year, month), span: false %></td>
                   <% end %>
-                  <td><%= money total_year_output(year) %></td>
+                  <td><%= money total_year_output(year), span: false %></td>
                   <td></td>
                 </tr>
 
