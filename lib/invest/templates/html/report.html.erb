@@ -21,6 +21,7 @@
             <thead>
               <tr>
                 <th>Ativo</th>
+                <th>Quantidade</th>
                 <th>Valor</th>
                 <th>Rentabilidade</th>
                 <th>Peso</th>
@@ -30,6 +31,7 @@
               <% categories.sort_by { |category, assets| category_year_balance(category, year) }.reverse.each do |category, assets| %>
                 <tr class="category">
                   <td><%= category %></td>
+                  <td></td>
                   <td><%= money category_year_balance(category, year) %></td>
                   <td><%= percent category_total_profitability(category) %></td>
                   <td><%= percent category_year_weight(category, year), span: false %></td>
@@ -40,6 +42,7 @@
 
                   <tr class="asset">
                     <td><%= asset %></td>
+                    <td><%= number asset_year_quantity(asset, year) %></td>
                     <td><%= money asset_year_balance(asset, year) %></td>
                     <td><%= percent asset_total_profitability(asset) %></td>
                     <td><%= percent asset_year_weight(asset, year), span: false %></td>
@@ -48,6 +51,7 @@
               <% end %>
               <tr class="total">
                 <td>Total</td>
+                <td></td>
                 <td><%= money total_year_balance(year) %></td>
                 <td><%= percent total_profitability %></td>
                 <td>100%</td>

@@ -342,6 +342,21 @@ class Invest
       end
     end
 
+    # Public: Calculates a year quantity balance for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    #
+    # Returns a double.
+    def asset_year_quantity(asset, year)
+      date = Date.new(year, 12, 31)
+
+      db.execute(
+        "SELECT SUM(quantity/100.0) FROM events WHERE asset = ? AND date(date) <= date(?);",
+        [asset, date.to_s]
+      ).first.first
+    end
+
     # Public: Calculates a year balance for an asset.
     #
     # asset - the asset name
