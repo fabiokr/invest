@@ -208,7 +208,7 @@
                   <!-- Categories -->
                   <% unless assets.empty? %>
                     <tr class="applications">
-                      <td rowspan="5" class="category"><%= category %></td>
+                      <td rowspan="<%= category == 'Acoes' ? 6 : 5 %>" class="category"><%= category %></td>
                       <td>Aportes</td>
                       <% (1..12).each do |month| %>
                         <td><%= money category_month_input(category, year, month), span: false %></td>
@@ -244,6 +244,17 @@
                       <td><%= percent category_total_profitability(category, year) %></td>
                     </tr>
 
+                    <% if category == 'Acoes' %>
+                      <tr class="index">
+                        <td>IBOVESPA</td>
+                        <% (1..12).each do |month| %>
+                          <td><%= percent index_month_value("IBOVESPA", year, month) %></td>
+                        <% end %>
+                        <td><%= percent index_year_value("IBOVESPA", year) %></td>
+                        <td></td>
+                      </tr>
+                    <% end %>
+
                     <tr class="weight">
                       <td>Peso</td>
                       <% (1..12).each do |month| %>
@@ -261,7 +272,7 @@
 
                 <!-- Totals -->
                 <tr class="applications">
-                  <td rowspan="4" class="total">Total</td>
+                  <td rowspan="6" class="total">Total</td>
                   <td>Aportes</td>
                   <% (1..12).each do |month| %>
                     <td><%= money total_month_input(year, month), span: false %></td>
@@ -295,6 +306,24 @@
                   <% end %>
                   <td><%= percent total_year_profitability(year) %></td>
                   <td><%= percent total_profitability(year) %></td>
+                </tr>
+
+                <tr class="index">
+                  <td>CDI</td>
+                  <% (1..12).each do |month| %>
+                    <td><%= percent index_month_value("CDI", year, month) %></td>
+                  <% end %>
+                  <td><%= percent index_year_value("CDI", year) %></td>
+                  <td></td>
+                </tr>
+
+                <tr class="index">
+                  <td>Inflação</td>
+                  <% (1..12).each do |month| %>
+                    <td><%= percent index_month_value("IPCA", year, month) %></td>
+                  <% end %>
+                  <td><%= percent index_year_value("IPCA", year) %></td>
+                  <td></td>
                 </tr>
               </tbody>
             </table>

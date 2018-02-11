@@ -808,10 +808,42 @@ class Invest
       end
     end
 
+    # Public: Calculates the index month value.
+    #
+    # asset - the index name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def index_month_value(asset, year, month)
+      start_date = Date.civil(year, month, 1)
+      end_date = Date.civil(year, month, -1)
+
+      value = db.execute(
+        "SELECT cast(value AS decimal) / 10000.0 FROM indexes WHERE asset = ? AND date(date) >= ? AND date(date) <= ? ORDER BY date(date) DESC LIMIT 1;",
+        [asset, start_date.to_s, end_date.to_s]
+      ).first
+
+      value.first if value
+    end
+
+    # Public: Calculates a year value for an index.
+    #
+    # asset - the asset name
+    # year - the year to check
+    #
+    # Returns a double.
+    def index_year_value(asset, year)
+      (1..12).inject(0) do |sum, month|
+        sum + (index_month_value(asset, year, month) || 0)
+      end
+    end
+
     memoize *(instance_methods.map(&:to_s).select do |method|
       method.start_with?("asset") ||
         method.start_with?("category") ||
-        method.start_with?("total")
+        method.start_with?("total") ||
+        method.start_with?("index")
     end + %i(year_range categories ir))
 
     private

@@ -78,19 +78,7 @@ table.history, table.portfolio {
   th, td {
     width: 6.5%;
   }
-  tr.profit {
-    background-color: #a6ebfc;
-    font-weight: bold;
-  }
-  tr.profitability {
-    background-color: #a6ebfc;
-    font-weight: bold;
-  }
-  tr.weight {
-    background-color: #a6ebfc;
-    font-weight: bold;
-  }
-  tr.ir {
+  tr.profit, tr.profitability, tr.weight, tr.ir, tr.index {
     background-color: #a6ebfc;
     font-weight: bold;
   }
