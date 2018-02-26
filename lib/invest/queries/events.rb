@@ -209,6 +209,28 @@ class Invest
       ).first.first
     end
 
+    # Public: Calculates a month purchase balance for an asset.
+    #
+    # asset - the asset name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def asset_month_purchase_balance(asset, year, month)
+      date = Date.civil(year, month, -1)
+
+      return unless date <= self.class.current_month_last_day
+
+      sum = db.execute(
+        "SELECT SUM(quantity/100.0) FROM events WHERE asset = ? AND date(date) <= date(?);",
+        [asset, date.to_s]
+      ).first.first
+
+      price = asset_month_average_purchase_price(asset, year, month)
+
+      sum * price if price
+    end
+
     # Public: Calculates a month balance for an asset.
     #
     # asset - the asset name

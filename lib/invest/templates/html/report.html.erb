@@ -133,7 +133,7 @@
 
                   <% assets.each do |asset| %>
                     <tr class="applications">
-                      <td rowspan="7" class="asset"><%= asset %></td>
+                      <td rowspan="8" class="asset"><%= asset %></td>
                       <td>Aportes</td>
                       <% (1..12).each do |month| %>
                         <td><%= money asset_month_input(asset, year, month), span: false %></td>
@@ -172,6 +172,15 @@
                             <%= number asset_month_quantity(asset, year, month) %>
                           <% end %>
                         </td>
+                      <% end %>
+                      <td></td>
+                      <td></td>
+                    </tr>
+
+                    <tr class="balance">
+                      <td>Saldo Médio</td>
+                      <% (1..12).each do |month| %>
+                        <td><%= money asset_month_purchase_balance(asset, year, month), span: false if asset_month_show?(asset, year, month) %></td>
                       <% end %>
                       <td></td>
                       <td></td>
