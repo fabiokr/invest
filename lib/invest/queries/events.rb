@@ -3,7 +3,6 @@ require "bigdecimal"
 
 class Invest
   class EventsQuery
-    IR = BigDecimal.new(0.15, 10)
     IR_CATEGORIES = %w(Acoes Opcoes Ativos)
 
     # Public: Gets the current month last day date.
@@ -92,14 +91,11 @@ class Invest
           categories.each do |category, assets|
             next unless IR_CATEGORIES.include?(category)
 
-            assets.each do |asset|
-              output = asset_month_output(asset, year, month)
-              profit = profit = asset_month_profit(asset, year, month)
-              ir = asset_month_ir(asset, year, month)
+            output = category_month_output(category, year, month)
+            profit = category_month_profit(category, year, month)
 
-              if output && output <= 0
-                data << [year, month, asset, -output, profit, ir]
-              end
+            if profit != 0
+              data << [year, month, category, -output, profit]
             end
           end
         end
@@ -267,19 +263,6 @@ class Invest
         output_quantity = -asset_month_output_quantity(asset, year, month)
         purchase_price = asset_month_average_purchase_price(asset, year, month)
         -output - (output_quantity * purchase_price)
-      end
-    end
-
-    # Public: Calculates a month owned income tax for an asset.
-    #
-    # asset - the asset name
-    # year - the year to check
-    # month - the month to check
-    #
-    # Returns a double.
-    def asset_month_ir(asset, year, month)
-      if (profit = asset_month_profit(asset, year, month)) && profit > 0
-        profit * IR
       end
     end
 
@@ -527,18 +510,16 @@ class Invest
       end
     end
 
-    # Public: Calculates a month owned income tax for a category.
+    # Public: Calculates a month profit for a category.
     #
-    # category - the category name
+    # category - the asset name
     # year - the year to check
     # month - the month to check
     #
     # Returns a double.
-    def category_month_ir(category, year, month)
-      if IR_CATEGORIES.include?(category)
-        categories[category].inject(0) do |sum, asset|
-          sum + (asset_month_ir(asset, year, month) || 0)
-        end
+    def category_month_profit(category, year, month)
+      categories[category].inject(0) do |sum, asset|
+        sum + (asset_month_profit(asset, year, month) || 0)
       end
     end
 
