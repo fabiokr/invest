@@ -1,0 +1,29 @@
+#! /usr/bin/env ruby
+
+require "json"
+require "net/http"
+require_relative "../lib/invest"
+
+CATEGORIES = %w(Acoes)
+
+date = Date.today
+
+query = Invest.new.events_query
+output = []
+
+
+query.categories.each do |category, assets|
+  next unless CATEGORIES.include?(category)
+
+  assets.each do |asset|
+    next unless query.asset_month_show?(asset, date.year, date.month)
+
+    puts "Checking #{asset}"
+
+    json = JSON.load(Net::HTTP.get(URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{asset}.SA&apikey=3D9IEYO5KBELMB8T")))
+    low = json["Time Series (Daily)"][date.to_s]["4. close"].gsub(".", ",")
+    output << %Q{#{date.to_s},#{asset},#{category},"#{low}"}
+  end
+end
+
+puts output

@@ -36,7 +36,12 @@ class Invest
   def html_report!(file)
     puts "Generating output to #{file}"
 
-    Html.new(EventsQuery.new(self)).save!(file)
+    Html.new(events_query).save!(file)
+  end
+
+  # Public: Gets the events query instance.
+  def events_query
+    @events_query ||= EventsQuery.new(self)
   end
 
   # Public: Gets the in memory sqlite database with the data imported from
