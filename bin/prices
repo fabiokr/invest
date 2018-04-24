@@ -21,8 +21,15 @@ query.categories.each do |category, assets|
     puts "Checking #{asset}"
 
     json = JSON.load(Net::HTTP.get(URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{asset}.SA&apikey=3D9IEYO5KBELMB8T")))
-    low = json["Time Series (Daily)"][date.to_s]["4. close"].gsub(".", ",")
-    output << %Q{#{date.to_s},#{asset},#{category},"#{low}"}
+
+    low_date = json["Time Series (Daily)"][date.to_s] || json["Time Series (Daily)"][(date - 1).to_s]
+
+    if low_date
+      low = low_date["4. close"].gsub(".", ",")
+      output << %Q{#{date.to_s},#{asset},#{category},"#{low}"}
+    else
+      puts "Nothing found for #{asset}"
+    end
   end
 end
 
