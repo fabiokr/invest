@@ -77,7 +77,7 @@ class Invest
     # Returns a String.
     def percent(value, span: true)
       if value
-        formatted_value = "%.2f\%" % (value * 100).round(2)
+        formatted_value = "%.2f\%%" % (value * 100).round(2)
 
         if span
           number_span(formatted_value, value)
