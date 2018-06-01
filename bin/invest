@@ -19,6 +19,6 @@ else
   puts "Generating default report..."
   Invest.new.html_report!("tmp/data.html")
 
-  puts "Generating report without Bitcoin..."
-  Invest.new(ignore: %w(Bitcoin)).html_report!("tmp/data-no-bitcoin.html")
+  puts "Generating report without Bitcoin & Imoveis..."
+  Invest.new(ignore: ["Bitcoin", "Apartamento Pagani"]).html_report!("tmp/data-compact.html")
 end
