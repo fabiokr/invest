@@ -3,7 +3,7 @@ require "bigdecimal"
 
 class Invest
   class EventsQuery
-    IR_CATEGORIES = %w(Acoes Opcoes Ativos FI)
+    IR_CATEGORIES = %w(Acoes Opcoes Ativos FI Criptomoedas Metais)
 
     # Public: Gets the current month last day date.
     #
