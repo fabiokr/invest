@@ -6,6 +6,7 @@ class Invest
   EVENTS_FILE = "data/events.csv".freeze
   PRICES_FILE = "data/prices.csv".freeze
   INDEXES_FILE = "data/indexes.csv".freeze
+  IBOVESPA_FILE = "data/ibovespa.csv".freeze
 
   CSV_OPTIONS = {
     headers: true,
@@ -26,6 +27,7 @@ class Invest
     import_data_from_events!
     import_data_from_prices!
     import_data_from_indexes!
+    import_data_from_ibovespa!
   end
 
   # Public: Generates an html report.
@@ -69,6 +71,12 @@ class Invest
           date text,
           asset text,
           value integer
+        );
+      SQL
+
+      db.execute <<-SQL
+        create table ibovespa (
+          asset text
         );
       SQL
 
@@ -137,6 +145,20 @@ class Invest
 
       db.execute "insert into indexes (date, asset, value) values (?, ?, ?)",
         [date, asset, value]
+    end
+  end
+
+  # Private: Imports data from the data/ibovespa.csv to the sqlite db.
+  #
+  # Returns nothing.
+  def import_data_from_ibovespa!
+    puts "Importing data from #{INDEXES_FILE}"
+
+    read_csv(IBOVESPA_FILE).map do |line|
+      asset = line.to_a.first.last
+
+      db.execute "insert into ibovespa (asset) values (?)",
+        [asset]
     end
   end
 
