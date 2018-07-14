@@ -16,9 +16,15 @@ if ARGV[0] == "-h"
     invest
   """
 else
+  invest = Invest.new
+
   puts "Generating default report..."
-  Invest.new.html_report!("tmp/data.html")
+  invest.html_report!("tmp/data.html")
 
   puts "Generating report without Bitcoin & Imoveis..."
-  Invest.new(ignore: ["Bitcoin", "Apartamento Pagani"]).html_report!("tmp/data-compact.html")
+  ["Bitcoin", "Apartamento Pagani"].each do |asset|
+    invest.db.execute("DELETE FROM events WHERE asset = ?", [asset])
+  end
+
+  invest.html_report!("tmp/data-compact.html")
 end
