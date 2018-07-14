@@ -40,7 +40,17 @@
                 <% assets.select { |asset| asset_year_balance(asset, year) > 0 }.sort_by { |asset| asset_year_balance(asset, year) }.reverse.each do |asset| %>
                   <% next unless asset_year_show?(asset, year) %>
 
-                  <tr class="asset">
+                  <%
+                    stock_class = if category == "Acoes"
+                      if asset_is_in_ibovespa(asset)
+                        "bluechip"
+                      else
+                        "smallcap"
+                      end
+                    end
+                  %>
+
+                  <tr class="asset <%= stock_class %>">
                     <td><%= asset %></td>
                     <td><%= number asset_year_quantity(asset, year) %></td>
                     <td><%= money asset_year_balance(asset, year) %></td>

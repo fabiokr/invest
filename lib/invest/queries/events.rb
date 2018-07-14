@@ -471,6 +471,20 @@ class Invest
       (balance + (-output) - input) / BigDecimal(input, 10)
     end
 
+    # Public: Checks if the asset is part of the IBOVESPA index.
+    #
+    # asset - the asset name
+    #
+    # Returns a boolean.
+    def asset_is_in_ibovespa(asset)
+      sum = db.execute(
+        "SELECT COUNT(*) FROM ibovespa WHERE asset = ?;",
+        [asset]
+      ).first.first
+
+      sum > 0
+    end
+
     # Public: Calculates a month deposits for a category.
     #
     # category - the category name

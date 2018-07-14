@@ -88,6 +88,9 @@ table.history, table.portfolio {
   tr:hover {
     background: yellow;
   }
+  tr.bluechip {
+    background: #AED6F1;
+  }
   td.asset {
     background-color: #1abc9c;
     font-weight: bold;
