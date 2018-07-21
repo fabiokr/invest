@@ -11,6 +11,15 @@ date = Date.today
 query = Invest.new.events_query
 output = []
 
+def get_price(asset)
+  content = Net::HTTP.get(URI("http://cotacoes.economia.uol.com.br/acao/cotacoes-historicas.html?codigo=#{asset}.SA"))
+
+  if match = %r{<td class="ultima">(.+)?</td>}.match(content)
+    match[1]
+  else
+    raise ArgumentError, "No quotes for #{asset}"
+  end
+end
 
 query.categories.each do |category, assets|
   next unless CATEGORIES.include?(category)
@@ -20,16 +29,7 @@ query.categories.each do |category, assets|
 
     puts "Checking #{asset}"
 
-    json = JSON.load(Net::HTTP.get(URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{asset}.SA&apikey=3D9IEYO5KBELMB8T")))
-
-    low_date = json["Time Series (Daily)"][date.to_s] || json["Time Series (Daily)"][(date - 1).to_s]
-
-    if low_date
-      low = low_date["4. close"].gsub(".", ",")
-      output << %Q{#{date.to_s},#{asset},#{category},"#{low}"}
-    else
-      puts "Nothing found for #{asset}"
-    end
+    output << %Q{#{date.to_s},#{asset},#{category},"#{get_price(asset)}"}
   end
 end
 
