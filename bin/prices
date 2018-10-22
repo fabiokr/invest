@@ -8,8 +8,8 @@ CATEGORIES = %w(Acoes FI)
 
 date = Date.today
 
+prices_file = File.open('data/prices.csv', 'a')
 query = Invest.new.events_query
-output = []
 
 def get_price(asset)
   content = Net::HTTP.get(URI("http://cotacoes.economia.uol.com.br/acao/cotacoes-historicas.html?codigo=#{asset}.SA"))
@@ -26,11 +26,8 @@ query.categories.each do |category, assets|
 
   assets.each do |asset|
     next unless query.asset_month_show?(asset, date.year, date.month)
-
-    puts "Checking #{asset}"
-
-    output << %Q{#{date.to_s},#{asset},#{category},"#{get_price(asset)}"}
+    output = %Q{#{date.to_s},#{asset},#{category},"#{get_price(asset)}"}
+    prices_file.write("#{output}\n")
+    puts output
   end
 end
-
-puts output
