@@ -374,13 +374,13 @@ class Invest
       return unless date <= self.class.current_year_last_day
 
       sum = db.execute(
-        "SELECT SUM(quantity/100.0) FROM events WHERE asset = ? AND date(date) <= date(?);",
+        "SELECT SUM(quantity) FROM events WHERE asset = ? AND date(date) <= date(?);",
         [asset, date.to_s]
       ).first.first
 
       price = asset_month_price(asset, year, 12)
 
-      sum * price if price
+      (sum / BigDecimal.new(100, 10)) * price if price
     end
 
     # Public: Calculates the year profitability for an asset.
