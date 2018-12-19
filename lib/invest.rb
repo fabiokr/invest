@@ -97,14 +97,19 @@ class Invest
 
       next if event.header_row? || options[:ignore].include?(asset)
 
-      # formats values before sending to the db
-      date = Date.strptime(date, '%Y-%m-%d').to_s
-      quantity = quantity.gsub(",", ".").to_f * 100
-      price = price.gsub(",", ".").to_f * 100
-      brokerage = brokerage.gsub(",", ".").to_f * 100
+      begin
+        # formats values before sending to the db
+        date = Date.strptime(date, '%Y-%m-%d').to_s
+        quantity = quantity.gsub(",", ".").to_f * 100
+        price = price.gsub(",", ".").to_f * 100
+        brokerage = brokerage.gsub(",", ".").to_f * 100
 
-      %{insert into events (date, asset, category, quantity, price, brokerage)
-        values ("#{date}", "#{asset}", "#{category}", #{quantity}, #{price}, #{brokerage})}
+        %{insert into events (date, asset, category, quantity, price, brokerage)
+          values ("#{date}", "#{asset}", "#{category}", #{quantity}, #{price}, #{brokerage})}
+      rescue NoMethodError
+        puts "Invalid row #{event}"
+        raise
+      end
     end
 
     db.execute_batch(queries.join(";"))
