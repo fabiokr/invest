@@ -14,7 +14,7 @@ class Invest
     force_quotes: true
   }
 
-  attr_reader :options
+  attr_reader :options, :queries
 
   # Public: Initializes the Invest class.
   #
@@ -24,10 +24,15 @@ class Invest
       ignore: []
     }
 
+    @queries = ["BEGIN TRANSACTION"]
+
     import_data_from_events!
     import_data_from_prices!
     import_data_from_indexes!
     import_data_from_ibovespa!
+
+    @queries << "COMMIT"
+    db.execute_batch(@queries.join(";"))
   end
 
   # Public: Generates an html report.
@@ -92,7 +97,7 @@ class Invest
   def import_data_from_events!
     puts "Importing data from #{EVENTS_FILE}"
 
-    queries = read_csv(EVENTS_FILE).map do |event|
+    @queries += read_csv(EVENTS_FILE).map do |event|
       date, asset, category, quantity, price, brokerage = event.to_a.map(&:last)
 
       next if event.header_row? || options[:ignore].include?(asset)
@@ -111,8 +116,6 @@ class Invest
         raise
       end
     end
-
-    db.execute_batch(queries.join(";"))
   end
 
   # Private: Imports data from the data/prices.csv to the sqlite db.
@@ -121,7 +124,7 @@ class Invest
   def import_data_from_prices!
     puts "Importing data from #{PRICES_FILE}"
 
-    queries = read_csv(PRICES_FILE).map do |event|
+    @queries += read_csv(PRICES_FILE).map do |event|
       date, asset, category, price = event.to_a.map(&:last)
 
       next if event.header_row? || options[:ignore].include?(asset)
@@ -133,8 +136,6 @@ class Invest
       %{insert into events (date, asset, category, quantity, price, brokerage)
         values ("#{date}", "#{asset}", "#{category}", 0, #{price}, 0)}
     end
-
-    db.execute_batch(queries.join(";"))
   end
 
   # Private: Imports data from the data/indexes.csv to the sqlite db.
@@ -143,7 +144,7 @@ class Invest
   def import_data_from_indexes!
     puts "Importing data from #{INDEXES_FILE}"
 
-    queries = read_csv(INDEXES_FILE).map do |event|
+    @queries += read_csv(INDEXES_FILE).map do |event|
       date, asset, value = event.to_a.map(&:last)
 
       next if event.header_row? || options[:ignore].include?(asset)
@@ -154,8 +155,6 @@ class Invest
 
       %{insert into indexes (date, asset, value) values ("#{date}", "#{asset}", #{value})}
     end
-
-    db.execute_batch(queries.join(";"))
   end
 
   # Private: Imports data from the data/ibovespa.csv to the sqlite db.
@@ -164,13 +163,11 @@ class Invest
   def import_data_from_ibovespa!
     puts "Importing data from #{IBOVESPA_FILE}"
 
-    queries = read_csv(IBOVESPA_FILE).map do |line|
+    @queries += read_csv(IBOVESPA_FILE).map do |line|
       asset = line.to_a.first.last
 
       %{insert into ibovespa (asset) values ("#{asset}")}
     end
-
-    db.execute_batch(queries.join(";"))
   end
 
   # Private: Reads a CSV file.
