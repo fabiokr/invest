@@ -147,6 +147,16 @@ table.portfolio {
   }
 }
 
+table.history {
+  tr.asset {
+    display: none;
+  }
+
+  tr.category {
+    cursor: pointer;
+  }
+}
+
 .positive {
   color: green;
 }
