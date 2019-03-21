@@ -511,6 +511,17 @@ class Invest
       end
     end
 
+    # Public: Calculates a month deposits for a category.
+    #
+    # category - the category name
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def category_month_input_output(category, year, month)
+      category_month_input(category, year, month) + category_month_output(category, year, month)
+    end
+
     # Public: Calculates a month balance for a category.
     #
     # category - the category name
@@ -597,6 +608,16 @@ class Invest
       categories[category].inject(0) do |sum, asset|
         sum + (asset_year_output(asset, year) || 0)
       end
+    end
+
+    # Public: Calculates a year deposits for a category.
+    #
+    # category - the category name
+    # year - the year to check
+    #
+    # Returns a double.
+    def category_year_input_output(category, year)
+      category_year_input(category, year) + category_year_output(category, year)
     end
 
     # Public: Calculates a year balance for a category.
@@ -707,6 +728,17 @@ class Invest
       end
     end
 
+    # Public: Calculates a month deposits total.
+    #
+    # year - the year to check
+    # month - the month to check
+    #
+    # Returns a double.
+    def total_month_input_output(year, month)
+      total_month_input(year, month) + total_month_output(year, month)
+    end
+
+
     # Public: Calculates a month balance total.
     #
     # year - the year to check
@@ -758,6 +790,15 @@ class Invest
       categories.keys.inject(0) do |sum, category|
         sum + (category_year_output(category, year) || 0)
       end
+    end
+
+    # Public: Calculates a year deposits totals.
+    #
+    # year - the year to check
+    #
+    # Returns a double.
+    def total_year_input_output(year)
+      total_year_input(year) + total_year_output(year)
     end
 
     # Public: Calculates a year balance total.
