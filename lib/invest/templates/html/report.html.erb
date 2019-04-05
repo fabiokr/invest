@@ -136,7 +136,7 @@
                 </tr>
               </thead>
               <tbody>
-                <% categories.each do |category, assets| %>
+                <% categories.sort_by { |category, assets| category_year_balance(category, year) }.reverse.each do |category, assets| %>
                   <!-- Categories -->
                   <% unless assets.empty? %>
                     <tr class="category applications">
